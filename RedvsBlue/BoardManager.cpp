@@ -3,6 +3,7 @@
 
 
 
+
 BoardManager::BoardManager()
 {
 
@@ -30,12 +31,14 @@ void BoardManager::InitialiseList()
 {
 	m_grid.clear();
 	m_grid.resize(m_columns * m_rows);
+	m_hover.resize(m_columns * m_rows);
 
 	for (int x = 1; x < m_columns - 1; x++)
 	{
 		for (int y = 1; y < m_rows - 1; y++)
 		{
 			m_grid.at(x*y) = Ground;
+			m_hover.at(x*y) = false;
 		}
 	}
 }
@@ -81,6 +84,12 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 			renderer->setRenderColour(0, 0.8, 0.3, 1);
 			break;
 		}
+
+		if (m_hover.at(i))
+		{
+			renderer->setRenderColour(1, 0, 0, 1);
+		}
+
 		renderer->drawBox(x, y, m_tileSize, m_tileSize);
 	}
 
@@ -97,4 +106,31 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 		renderer->drawLine(0, i * m_tileSize, m_columns * m_tileSize, i * m_tileSize);
 	}
 
+}
+
+void BoardManager::Update(aie::Input* input)
+{
+	// get the mouse position
+	int x = input->getMouseX() / m_tileSize;
+	int y = input->getMouseY() / m_tileSize;
+	// calculate the index
+	int index = x + y * m_columns;
+
+	ClearHoverList();
+	 
+	// check index is in range
+	if (x < m_columns && y < m_rows)
+	{
+		m_hover.at(index) = true;
+	}
+
+	
+}
+
+void BoardManager::ClearHoverList()
+{
+	for (auto& i : m_hover)
+	{
+		i = false;
+	}
 }

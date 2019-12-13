@@ -2,6 +2,8 @@
 #include "GameObject.h"
 #include <vector>
 #include "Renderer2D.h"
+#include "Input.h"
+#include "Tile.h"
 
 enum TileType {
 	Ground = 0,
@@ -19,6 +21,7 @@ public:
 	void SetupScene(int level);
 	void Print();
 	void Draw(aie::Renderer2D* renderer);
+	void Update(aie::Input* input);
 
 	// acts as a range
 	class Count
@@ -33,6 +36,7 @@ public:
 private:
 	void InitialiseList();
 	void BoardSetup();
+	void ClearHoverList();
 
 private:
 	int							m_columns;
@@ -43,6 +47,8 @@ private:
 	int							m_tileSize;
 	int							m_leftBorder;
 	int							m_bottomBorder;
+
+	std::vector<bool>			m_hover;
 
 };
 

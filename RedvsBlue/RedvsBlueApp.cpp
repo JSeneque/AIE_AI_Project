@@ -40,6 +40,8 @@ void RedvsBlueApp::update(float deltaTime) {
 	// input example
 	aie::Input* input = aie::Input::getInstance();
 
+	m_board->Update(input);
+
 	// exit the application
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();

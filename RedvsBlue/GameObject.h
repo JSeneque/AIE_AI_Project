@@ -14,7 +14,7 @@ public:
 	void update(float deltaTime);
 	void draw(aie::Renderer2D* renderer);
 
-private:
+protected:
 	Vector2D		m_position;
 
 };
