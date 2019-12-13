@@ -3,6 +3,7 @@
 #include "Application.h"
 #include "Renderer2D.h"
 #include "Grid.h"
+#include "BoardManager.h"
 
 class RedvsBlueApp : public aie::Application {
 public:
@@ -20,5 +21,6 @@ protected:
 
 	aie::Renderer2D*	m_2dRenderer;
 	aie::Font*			m_font;
-	Grid*				m_board;
+	//Grid*				m_board;
+	BoardManager*		m_board;
 };

@@ -20,12 +20,12 @@ bool RedvsBlueApp::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	// create a 8x6 grid board
-	m_board = new Grid(8, 6);
-	m_board->Initialise();
-
+	//m_board = new Grid(8, 6);
+	m_board = new BoardManager(10, 10, 64);
+	m_board->SetupScene(1);
 	// print out grid board to console as a debug
 	m_board->Print();
-
+	//m_board->InitialiseList();
 	return true;
 }
 
@@ -54,9 +54,10 @@ void RedvsBlueApp::draw() {
 	m_2dRenderer->begin();
 
 	// draw your stuff here!
+	m_board->Draw(m_2dRenderer);
 	
 	// output some text, uses the last used colour
-	m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
+	//m_2dRenderer->drawText(m_font, "Press ESC to quit", 0, 0);
 
 	// done drawing sprites
 	m_2dRenderer->end();
