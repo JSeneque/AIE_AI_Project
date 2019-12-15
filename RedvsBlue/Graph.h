@@ -2,16 +2,19 @@
 #include <list>
 #include <glm/glm.hpp>
 
-enum TileType {
+enum Object {
 	Ground = 0,
-	Water
+	Water,
+	BlueSoldier,
+	RedSoldier,
+	Tree
 };
 
-enum UnitType {
-	NoUnit,
-	BlueSoldier,
-	RedSoldier
-};
+//enum UnitType {
+//	NoUnit,
+//	BlueSoldier,
+//	RedSoldier
+//};
 
 struct Edge {
 	// the node the edge is going to
@@ -30,8 +33,8 @@ struct Node {
 	float runningCost = 0.0f;
 	glm::vec2 position;
 
-	UnitType unit;
-	TileType tile;
+	//UnitType unit;
+	Object tile;
 
 	Node* parent = nullptr;
 

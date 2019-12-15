@@ -20,6 +20,7 @@ public:
 	void Print();
 	void Draw(aie::Renderer2D* renderer);
 	void Update(aie::Input* input);
+	void PlaceBlueTeam();
 
 	// acts as a range
 	class Count
@@ -33,7 +34,6 @@ public:
 
 private:
 	void InitialiseList();
-	void BoardSetup();
 	void ClearHoverList();
 
 private:
@@ -46,10 +46,10 @@ private:
 	int							m_leftBorder;
 	int							m_bottomBorder;
 
-	std::vector<TileType>		m_grid;
+	std::vector<Object>			m_grid;
 	std::vector<bool>			m_hover;
 	// this list holds the background tiles
-	std::vector<Node>			m_mapData;
+	std::vector<char>			m_mapData;
 	// combined the others lists into a weighted nodes
 	std::vector<Node>			m_nodeList;
 
