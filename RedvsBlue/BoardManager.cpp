@@ -30,40 +30,45 @@ void BoardManager::Start()
 void BoardManager::InitialiseList()
 {
 	m_grid.clear();
+
 	m_grid.resize(m_columns * m_rows);
 	m_hover.resize(m_columns * m_rows);
 
-	for (int x = 1; x < m_columns - 1; x++)
-	{
-		for (int y = 1; y < m_rows - 1; y++)
-		{
-			m_grid.at(x*y) = Ground;
-			m_hover.at(x*y) = false;
-		}
-	}
-}
-
-void BoardManager::BoardSetup()
-{
-	// set up outer wall and ground tiles
-	//for (int x = 0; x < columns ; x++)
+	//for (int x = 1; x < m_columns - 1; x++)
 	//{
-	//	for (int y = 0; y < rows  ; y++)
+	//	for (int y = 1; y < m_rows - 1; y++)
 	//	{
-	//		// if we are on the outer rim, draw water tile
-	//		if (x == 0 || x == columns || y == 0 || y == rows)
-	//		{
-	//			// draw water tile
-	//			grid.at(x*y) = 1;
-	//		}
+	//		m_grid.at(x*y) = Ground;
+	//		m_hover.at(x*y) = false;
 	//	}
 	//}
+
+	// set up outer water tiles
+	for (int x = 0; x < m_columns ; x++)
+	{
+		for (int y = 0; y < m_rows ; y++)
+		{
+			// if we are on the outer rim, draw water tile
+			if (x == 0 || x == m_columns - 1 || y == 0 || y == m_rows - 1)
+			{
+				// draw water tile
+				m_grid.at(x + m_columns * y) = Water;
+			}
+			else
+			{
+				m_grid.at(x + m_columns * y) = Ground;
+
+			}
+			m_hover.at(x + m_columns * y) = false;
+		}
+	}
+
 }
 
 void BoardManager::SetupScene(int level)
 {
 	InitialiseList();
-	BoardSetup();
+	//BoardSetup();
 	
 }
 
@@ -81,13 +86,20 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 		switch (tile)
 		{
 		case Ground:
-			renderer->setRenderColour(0, 0.8, 0.3, 1);
+			// 107,142,35)
+			renderer->setRenderColour(0.42, 0.56, .01, 1);
+			break;
+		case Water:
+			// 107,142,35)
+			renderer->setRenderColour(0, 0, 0.56, 1);
 			break;
 		}
 
+
 		if (m_hover.at(i))
 		{
-			renderer->setRenderColour(1, 0, 0, 1);
+			// 154,205,50
+			renderer->setRenderColour(0.6, 0.8, .20, 1);
 		}
 
 		renderer->drawBox(x, y, m_tileSize, m_tileSize);
@@ -118,13 +130,11 @@ void BoardManager::Update(aie::Input* input)
 
 	ClearHoverList();
 	 
-	// check index is in range
-	if (x < m_columns && y < m_rows)
+	// check index is in range and is not on a water tile
+	if ((x < m_columns && y < m_rows) && !(x == 0 || x == m_columns - 1 || y == 0 || y == m_rows - 1))
 	{
 		m_hover.at(index) = true;
 	}
-
-	
 }
 
 void BoardManager::ClearHoverList()

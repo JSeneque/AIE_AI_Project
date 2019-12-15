@@ -172,7 +172,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BoardManager.h" />
+    <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="RedvsBlueApp.h" />
     <ClInclude Include="Tile.h" />

@@ -23,4 +23,6 @@ protected:
 	aie::Font*			m_font;
 	//Grid*				m_board;
 	BoardManager*		m_board;
+	
+	
 };
