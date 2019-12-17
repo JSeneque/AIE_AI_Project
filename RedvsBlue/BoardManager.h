@@ -35,6 +35,9 @@ public:
 private:
 	void InitialiseList();
 	void ClearHoverList();
+	void BuildNodeList();
+	void StartUp();
+	void DrawPath();
 
 private:
 	int							m_columns;
@@ -53,7 +56,10 @@ private:
 	// combined the others lists into a weighted nodes
 	std::vector<Node>			m_nodeList;
 
+	Node*						m_startPoint;
+	Node*						m_endPoint;
 
+	std::list<const Node*>		m_path;
 
 };
 

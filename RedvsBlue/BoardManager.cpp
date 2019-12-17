@@ -1,8 +1,8 @@
 #include "BoardManager.h"
 #include <iostream>
+#include "Dijkstra.h"
 
-
-
+std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
 BoardManager::BoardManager()
 {
@@ -63,6 +63,12 @@ void BoardManager::SetupScene(int level)
 {
 	InitialiseList();	
 	PlaceBlueTeam();
+	BuildNodeList();
+
+	m_startPoint = &m_nodeList[41];
+	m_endPoint = &m_nodeList[58];
+
+	m_path = DijkstraSearch(m_startPoint, m_endPoint);
 }
 
 void BoardManager::Draw(aie::Renderer2D* renderer)
@@ -119,7 +125,30 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 		renderer->drawLine(0, i * m_tileSize, m_columns * m_tileSize, i * m_tileSize);
 	}
 
+	// set the path colour
+	renderer->setRenderColour(1, 0.5, 0.3, 1);
+
+	// check the path is not empty
+	if (m_path.size() > 2)
+	{
+		// setup for loop with two initialisers
+		for (auto i = m_path.begin(), j = std::next(m_path.begin()); j != m_path.end(); ++i, ++j)
+		{
+			// get the starting and ending points
+			unsigned int id = (*i)->id;
+			unsigned int jd = (*j)->id;
+			float ix = (id % m_columns) * m_tileSize + m_tileSize / 2;
+			float iy = (id / m_columns) * m_tileSize + m_tileSize / 2;
+			float jx = (jd % m_columns) * m_tileSize + m_tileSize / 2;
+			float jy = (jd / m_columns) * m_tileSize + m_tileSize / 2;
+
+			// draw line
+			renderer->drawLine(ix, iy, jx, jy, 4);
+
+		}
+	}
 }
+
 
 void BoardManager::Update(aie::Input* input)
 {
@@ -149,5 +178,58 @@ void BoardManager::ClearHoverList()
 void BoardManager::PlaceBlueTeam()
 {
 	m_grid.at(41) = BlueSoldier;
+	m_mapData.at(41) = 1;
 	m_grid.at(58) = RedSoldier;
+	m_mapData.at(58) = 1;
+}
+
+void BoardManager::BuildNodeList()
+{
+	// clear the node list
+	m_nodeList.clear();
+	// set the size of the list
+	m_nodeList.resize(m_columns * m_rows);
+	
+	// initialise each node
+	for (int i = 0; i < m_nodeList.size(); ++i)
+	{
+		// set id
+		m_nodeList[i].id = i;
+		// a lambda function to calculate weight and create edges
+		auto assignWeight = [&](int id)
+		{
+			float weight = m_grid[id] == Water || m_grid[id] == BlueSoldier || m_grid[id] == RedSoldier ? 1000000.0f : 1.0f;
+			m_nodeList[i].outgoingEdges.push_back(Edge{ &m_nodeList[id], weight });
+
+		};
+
+		// check left of tile
+		if ( i % m_columns != 0)
+		{
+			assignWeight(i - 1);
+		}
+
+		// check right of tile
+		if ((i + 1) % m_columns != 0)
+		{
+			assignWeight(i + 1);
+		}
+
+		// check above tile
+		if (i / m_columns != m_rows - 1)
+		{
+			assignWeight(i + m_columns);
+		}
+
+		// check below tile
+		if (i / m_columns != 0)
+		{
+			assignWeight(i - m_columns);
+		}
+	}
+}
+
+void BoardManager::StartUp() 
+{
+
 }
