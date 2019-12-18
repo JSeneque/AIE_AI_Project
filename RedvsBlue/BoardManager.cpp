@@ -1,12 +1,13 @@
 #include "BoardManager.h"
 #include <iostream>
 #include "Dijkstra.h"
+#include "Global.h"
 
 std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
 BoardManager::BoardManager()
 {
-
+	
 }
 
 
@@ -29,12 +30,18 @@ void BoardManager::Start()
 void BoardManager::InitialiseList()
 {
 	m_grid.clear();
-	m_mapData.clear();
+	m_units.clear();
 
 	m_grid.resize(m_columns * m_rows);
 	m_hover.resize(m_columns * m_rows);
-	m_mapData.resize(m_columns * m_rows);
+	m_units.resize(m_columns * m_rows);
 
+	m_lastSelectedUnit = 999999;
+
+}
+
+void BoardManager::BuildLandscape()
+{
 	// set up outer water tiles
 	for (int x = 0; x < m_columns ; x++)
 	{
@@ -45,26 +52,32 @@ void BoardManager::InitialiseList()
 			{
 				// draw water tile
 				m_grid.at(x + m_columns * y) = Water;
-				m_mapData.at(x + m_columns * y) = 1;
+
 			}
 			else
 			{
 				m_grid.at(x + m_columns * y) = Ground;
-				m_mapData.at(x + m_columns * y) = 0;
 
 			}
 			m_hover.at(x + m_columns * y) = false;
 		}
 	}
+}
 
+void BoardManager::FillOutLevel()
+{
+	m_grid.at(44) = Water;
 }
 
 void BoardManager::SetupScene(int level)
 {
-	InitialiseList();	
-	PlaceBlueTeam();
+	InitialiseList();
+	BuildLandscape();
+	FillOutLevel();
+	PlaceUnits();
 	BuildNodeList();
 
+	// hardcoded for prototyping purposes
 	m_startPoint = &m_nodeList[41];
 	m_endPoint = &m_nodeList[58];
 
@@ -76,32 +89,25 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 	// draw map
 	for (int i = 0; i < m_grid.size(); ++i)
 	{
-		Object tile = m_grid.at(i);
+		ObjectType objectType = m_grid.at(i);
 
 		// screen coordinates
 		int x = (i % m_columns) * m_tileSize + m_tileSize / 2;
 		int y = (i / m_columns) * m_tileSize + m_tileSize / 2;
 
-		switch (tile)
+		switch (objectType)
 		{
 		case Ground:
 			// 107,142,35)
 			renderer->setRenderColour(0.42, 0.56, .01, 1);
 			break;
 		case Water:
-			// 107,142,35)
 			renderer->setRenderColour(0.20, 0.80, 1.0, 1);
 			break;
-		case BlueSoldier:
-			// 107,142,35)
-			renderer->setRenderColour(0, 0, 0.56, 1);
-			break;
-		case RedSoldier:
-			// 107,142,35)
-			renderer->setRenderColour(1.0, 0, 0.0, 1);
-			break;
+		/*case Soldier:
+			renderer->setRenderColour(0.42, 0.56, .01, 1);
+			break;*/
 		}
-
 
 		if (m_hover.at(i))
 		{
@@ -110,7 +116,35 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 		}
 
 		renderer->drawBox(x, y, m_tileSize, m_tileSize);
+
+		// draw soldier (refactor into unit class to draw)
+		if (m_units[i].getActive())
+
+		{
+			// draw a circle at the starting position of the path
+			float ax = i % m_columns;
+			float ay = i / m_columns;
+
+			if (m_units[i].getTeam() == Blue && !m_units[i].getIsSelected())
+			{
+				renderer->setRenderColour(0.42, 0.56, 1.0, 1);
+			}
+			else if (m_units[i].getTeam() == Red && !m_units[i].getIsSelected())
+			{
+				renderer->setRenderColour(1.0, 0.56, 0.42, 1);
+			}
+			else
+			{
+				renderer->setRenderColour(1.0, 1.0, 1.0, 1);
+			}
+
+			
+
+			renderer->drawCircle(ax * m_tileSize + m_tileSize / 2, ay * m_tileSize + m_tileSize / 2, m_tileSize / 4);
+		}
 	}
+
+
 
 	renderer->setRenderColour(1, 1, 1, 1);
 	// draw the vertical lines
@@ -165,6 +199,43 @@ void BoardManager::Update(aie::Input* input)
 	{
 		m_hover.at(index) = true;
 	}
+
+	// detect a left click on a unit
+	if (input->wasMouseButtonPressed(0))
+	{
+		std::cout << "Debug: Left Mouse Click!" << std::endl;
+		// get the index where the left click occurs
+		// get the mouse position in pixels and  convert into an index
+		int x = input->getMouseX() / m_tileSize;
+		int y = input->getMouseY() / m_tileSize;
+
+		// calculate the index from the x and y
+		int index = x + y * m_columns;
+
+		// there is a unit at that location and is not already selected
+		if (m_units[index].getActive() && index != m_lastSelectedUnit)
+		{
+			m_units[index].setIsSelected(true);
+
+			if (m_lastSelectedUnit != 999999)
+			{
+				m_units[m_lastSelectedUnit].setIsSelected(false);
+			}
+
+			m_lastSelectedUnit = index;
+
+			
+		} 
+		else
+		{
+			if (m_lastSelectedUnit != 999999)
+			{
+				m_units[m_lastSelectedUnit].setIsSelected(false);
+				m_lastSelectedUnit = 999999;
+			}
+		}
+
+	}
 }
 
 void BoardManager::ClearHoverList()
@@ -175,12 +246,14 @@ void BoardManager::ClearHoverList()
 	}
 }
 
-void BoardManager::PlaceBlueTeam()
+void BoardManager::PlaceUnits()
 {
-	m_grid.at(41) = BlueSoldier;
-	m_mapData.at(41) = 1;
-	m_grid.at(58) = RedSoldier;
-	m_mapData.at(58) = 1;
+	Unit unit;
+	m_units.at(41).setTeam(Red);
+	m_units.at(41).setActive(true);
+	m_units.at(58).setTeam(Blue);
+	m_units.at(58).setActive(true);
+
 }
 
 void BoardManager::BuildNodeList()
@@ -193,12 +266,15 @@ void BoardManager::BuildNodeList()
 	// initialise each node
 	for (int i = 0; i < m_nodeList.size(); ++i)
 	{
+
+		
+
 		// set id
 		m_nodeList[i].id = i;
 		// a lambda function to calculate weight and create edges
 		auto assignWeight = [&](int id)
 		{
-			float weight = m_grid[id] == Water || m_grid[id] == BlueSoldier || m_grid[id] == RedSoldier ? 1000000.0f : 1.0f;
+			float weight = m_grid[id] == Water || m_grid[id] == Soldier  ? 1000000.0f : 1.0f;
 			m_nodeList[i].outgoingEdges.push_back(Edge{ &m_nodeList[id], weight });
 
 		};
@@ -227,9 +303,4 @@ void BoardManager::BuildNodeList()
 			assignWeight(i - m_columns);
 		}
 	}
-}
-
-void BoardManager::StartUp() 
-{
-
 }

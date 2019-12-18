@@ -1,20 +1,9 @@
 #pragma once
 #include <list>
 #include <glm/glm.hpp>
+#include "Unit.h"
+#include "Global.h"
 
-enum Object {
-	Ground = 0,
-	Water,
-	BlueSoldier,
-	RedSoldier,
-	Tree
-};
-
-//enum UnitType {
-//	NoUnit,
-//	BlueSoldier,
-//	RedSoldier
-//};
 
 struct Edge {
 	// the node the edge is going to
@@ -34,7 +23,7 @@ struct Node {
 	glm::vec2 position;
 
 	//UnitType unit;
-	Object tile;
+	Unit unit;
 
 	Node* parent = nullptr;
 
