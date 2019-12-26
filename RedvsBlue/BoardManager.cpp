@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Dijkstra.h"
 #include "Global.h"
+#include <math.h>
 
 std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
@@ -25,6 +26,7 @@ void BoardManager::Start()
 {
 	// so if 5,9 mens  a minimum of 5 items and a maximum of 9
 	m_waterTileCount = new Count(5, 9);
+	
 }
 
 void BoardManager::InitialiseList()
@@ -37,6 +39,8 @@ void BoardManager::InitialiseList()
 	m_units.resize(m_columns * m_rows);
 
 	m_lastSelectedUnit = 999999;
+
+	
 
 }
 
@@ -117,6 +121,10 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 
 		renderer->drawBox(x, y, m_tileSize, m_tileSize);
 
+		// draw movement
+		if (m_lastSelectedUnit != 999999)
+			DrawMovementArea(renderer);
+
 		// draw soldier (refactor into unit class to draw)
 		if (m_units[i].getActive())
 
@@ -137,8 +145,6 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 			{
 				renderer->setRenderColour(1.0, 1.0, 1.0, 1);
 			}
-
-			
 
 			renderer->drawCircle(ax * m_tileSize + m_tileSize / 2, ay * m_tileSize + m_tileSize / 2, m_tileSize / 4);
 		}
@@ -181,6 +187,8 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 
 		}
 	}
+
+	
 }
 
 
@@ -203,11 +211,13 @@ void BoardManager::Update(aie::Input* input)
 	// detect a left click on a unit
 	if (input->wasMouseButtonPressed(0))
 	{
-		std::cout << "Debug: Left Mouse Click!" << std::endl;
+		
 		// get the index where the left click occurs
 		// get the mouse position in pixels and  convert into an index
 		int x = input->getMouseX() / m_tileSize;
 		int y = input->getMouseY() / m_tileSize;
+
+		std::cout << "Debug: Left Click at x: " << x << " y: " << y << std::endl;
 
 		// calculate the index from the x and y
 		int index = x + y * m_columns;
@@ -224,7 +234,9 @@ void BoardManager::Update(aie::Input* input)
 
 			m_lastSelectedUnit = index;
 
-			
+			// show where the unit can move to
+			// Absolute (unit.x - tile.x) + Absolute(unit.y - tile.y) <= Unit.MovementCost
+			//ShowMovementArea(m_units[index], &m_nodeList[index]);
 		} 
 		else
 		{
@@ -235,6 +247,22 @@ void BoardManager::Update(aie::Input* input)
 			}
 		}
 
+	}
+	
+	// debug to test distance formula
+	if (input->wasMouseButtonPressed(1))
+	{
+		if (m_lastSelectedUnit != 999999)
+		{
+			int x = input->getMouseX() / m_tileSize;
+			int y = input->getMouseY() / m_tileSize;
+
+			int index = x + y * m_columns;
+
+			m_endPoint = &m_nodeList[index];
+
+			m_path = DijkstraSearch(m_startPoint, m_endPoint);
+		}
 	}
 }
 
@@ -303,4 +331,28 @@ void BoardManager::BuildNodeList()
 			assignWeight(i - m_columns);
 		}
 	}
+}
+
+void BoardManager::ShowMovementArea(Unit unit, Node* startNode)
+{
+	
+}
+
+void BoardManager::DrawMovementArea(aie::Renderer2D* renderer)
+{
+	renderer->setRenderColour(0.65, 0.85, .01, 0.3);
+	
+
+	for (auto& i : m_nodeList)
+	{
+		if (i.runningCost < 4 && i.runningCost != 0)
+		{
+			int x = (i.id % m_columns) * m_tileSize + m_tileSize / 2;
+			int y = (i.id / m_columns) * m_tileSize + m_tileSize / 2;
+
+			renderer->drawBox(x, y, m_tileSize, m_tileSize);
+		}
+		
+	}
+
 }

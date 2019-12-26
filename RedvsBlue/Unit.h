@@ -16,6 +16,8 @@ public:
 	void setActive(bool flag);
 	bool getActive() { return m_isActive; }
 
+	int getMovementCost() { return m_movementCost; }
+
 	//void draw(aie::Renderer2D* renderer);
 
 	//Unit operator = (const Unit &other);

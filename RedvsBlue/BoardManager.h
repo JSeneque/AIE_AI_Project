@@ -6,8 +6,6 @@
 #include "Tile.h"
 #include "Graph.h"
 
-
-
 class BoardManager
 {
 public:
@@ -39,6 +37,8 @@ private:
 	void BuildLandscape();
 	void FillOutLevel();
 	void PlaceUnits();
+	void ShowMovementArea(Unit unit, Node* startNode);
+	void DrawMovementArea(aie::Renderer2D* renderer);
 
 private:
 	int							m_columns;
@@ -62,6 +62,6 @@ private:
 
 	std::list<const Node*>		m_path;
 	int							m_lastSelectedUnit;
-
+	std::list<const Node*>		m_movementArea;
 };
 

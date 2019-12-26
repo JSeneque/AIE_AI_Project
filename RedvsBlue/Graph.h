@@ -20,6 +20,8 @@ struct Node {
 	unsigned int id = ' ';
 	// pathfinding
 	float runningCost = 0.0f;
+	// might replace the runningCost with gScore
+	int gScore = 1;
 	glm::vec2 position;
 
 	//UnitType unit;
@@ -30,7 +32,6 @@ struct Node {
 	// graph structure
 	std::list<Edge> outgoingEdges;
 };
-
 
 
 class Graph

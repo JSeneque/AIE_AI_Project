@@ -37,19 +37,5 @@ void Grid::Print()
 {
 	std::cout << "Grid size: " << m_width << " x " << m_height << std::endl;
 	
-	// print top board
-	for (int i = 0; i < m_width; i++) {
-		std::cout << "|---";
-	}
-	std::cout << "|" << std::endl;
 
-	// print rows and columns
-	for (int col = 0; col < m_height; col++)
-	{
-		for (int row = 0; row < m_width; row++) {
-			std::cout << "|   ";
-		}
-		std::cout << "|" << std::endl;
-	}
-	std::cout << "|" << std::endl;
 }
