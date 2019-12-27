@@ -82,10 +82,10 @@ void BoardManager::SetupScene(int level)
 	BuildNodeList();
 
 	// hardcoded for prototyping purposes
-	m_startPoint = &m_nodeList[41];
+	m_startPoint = &m_nodeList[55];
 	m_endPoint = &m_nodeList[58];
 
-	m_path = DijkstraSearch(m_startPoint, m_endPoint);
+	//m_path = DijkstraSearch(m_startPoint, m_endPoint);
 }
 
 void BoardManager::Draw(aie::Renderer2D* renderer)
@@ -165,28 +165,28 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 		renderer->drawLine(0, i * m_tileSize, m_columns * m_tileSize, i * m_tileSize);
 	}
 
-	// set the path colour
-	renderer->setRenderColour(1, 0.5, 0.3, 1);
+	//// set the path colour
+	//renderer->setRenderColour(1, 0.5, 0.3, 1);
 
-	// check the path is not empty
-	if (m_path.size() > 2)
-	{
-		// setup for loop with two initialisers
-		for (auto i = m_path.begin(), j = std::next(m_path.begin()); j != m_path.end(); ++i, ++j)
-		{
-			// get the starting and ending points
-			unsigned int id = (*i)->id;
-			unsigned int jd = (*j)->id;
-			float ix = (id % m_columns) * m_tileSize + m_tileSize / 2;
-			float iy = (id / m_columns) * m_tileSize + m_tileSize / 2;
-			float jx = (jd % m_columns) * m_tileSize + m_tileSize / 2;
-			float jy = (jd / m_columns) * m_tileSize + m_tileSize / 2;
+	//// check the path is not empty
+	//if (m_path.size() > 2)
+	//{
+	//	// setup for loop with two initialisers
+	//	for (auto i = m_path.begin(), j = std::next(m_path.begin()); j != m_path.end(); ++i, ++j)
+	//	{
+	//		// get the starting and ending points
+	//		unsigned int id = (*i)->id;
+	//		unsigned int jd = (*j)->id;
+	//		float ix = (id % m_columns) * m_tileSize + m_tileSize / 2;
+	//		float iy = (id / m_columns) * m_tileSize + m_tileSize / 2;
+	//		float jx = (jd % m_columns) * m_tileSize + m_tileSize / 2;
+	//		float jy = (jd / m_columns) * m_tileSize + m_tileSize / 2;
 
-			// draw line
-			renderer->drawLine(ix, iy, jx, jy, 4);
+	//		// draw line
+	//		renderer->drawLine(ix, iy, jx, jy, 4);
 
-		}
-	}
+	//	}
+	//}
 
 	
 }
@@ -225,7 +225,17 @@ void BoardManager::Update(aie::Input* input)
 		// there is a unit at that location and is not already selected
 		if (m_units[index].getActive() && index != m_lastSelectedUnit)
 		{
+			// set the unit as selected
 			m_units[index].setIsSelected(true);
+
+			// draw a path to initiate the running cost to draw the movement area
+			m_startPoint = &m_nodeList[index];
+
+			/*if (x <= m_columns / 2)
+				m_endPoint = &m_nodeList[m_columns + m_rows * m_columns];
+		*/
+
+			m_path = FanOutCalculateRunningCost(m_startPoint);
 
 			if (m_lastSelectedUnit != 999999)
 			{
@@ -277,8 +287,8 @@ void BoardManager::ClearHoverList()
 void BoardManager::PlaceUnits()
 {
 	Unit unit;
-	m_units.at(41).setTeam(Red);
-	m_units.at(41).setActive(true);
+	m_units.at(55).setTeam(Red);
+	m_units.at(55).setActive(true);
 	m_units.at(58).setTeam(Blue);
 	m_units.at(58).setActive(true);
 
