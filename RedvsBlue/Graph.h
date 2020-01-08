@@ -2,7 +2,6 @@
 #include <list>
 #include <glm/glm.hpp>
 #include "Unit.h"
-#include "Global.h"
 
 
 struct Edge {
