@@ -40,7 +40,8 @@ void BoardManager::InitialiseList()
 
 	m_lastSelectedUnit = 999999;
 
-	
+	m_gridMap = new GridMap(5, 8, 64);
+	m_gridMap->Print();
 
 }
 

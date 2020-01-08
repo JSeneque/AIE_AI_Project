@@ -12,4 +12,10 @@ enum Team {
 	Blue
 };
 
+enum Event {
+	UNIT_SELECTED
+};
+
+
+#define MAX_OBSERVERS 100
 

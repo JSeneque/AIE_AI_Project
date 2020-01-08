@@ -164,8 +164,10 @@
   <ItemGroup>
     <ClCompile Include="BoardManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GridMap.cpp" />
     <ClCompile Include="RedvsBlueApp.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Subject.cpp" />
     <ClCompile Include="Tile.cpp" />
     <ClCompile Include="Unit.cpp" />
     <ClCompile Include="Vector2D.cpp" />
@@ -176,7 +178,10 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Graph.h" />
+    <ClInclude Include="GridMap.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="RedvsBlueApp.h" />
+    <ClInclude Include="Subject.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Unit.h" />
     <ClInclude Include="Vector2D.h" />

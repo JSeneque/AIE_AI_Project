@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Tile.h"
 #include "Graph.h"
+#include "GridMap.h"
 
 class BoardManager
 {
@@ -63,5 +64,7 @@ private:
 	std::list<const Node*>		m_path;
 	int							m_lastSelectedUnit;
 	std::list<const Node*>		m_movementArea;
+
+	GridMap*					m_gridMap;
 };
 
