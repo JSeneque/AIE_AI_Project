@@ -3,7 +3,9 @@ enum ObjectType {
 	Ground = 0,
 	Water,
 	Soldier,
-	Tree
+	Tree,
+	Hover
+
 };
  
 enum Team {

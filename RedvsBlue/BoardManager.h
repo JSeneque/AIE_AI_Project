@@ -32,11 +32,11 @@ public:
 	};
 
 private:
-	void InitialiseList();
+	void Initialise();
 	void ClearHoverList();
 	void BuildNodeList();
-	void BuildLandscape();
-	void FillOutLevel();
+	//void BuildLandscape();
+	//void FillOutLevel();
 	void PlaceUnits();
 	void ShowMovementArea(Unit unit, Node* startNode);
 	void DrawMovementArea(aie::Renderer2D* renderer);
@@ -50,8 +50,10 @@ private:
 	int							m_tileSize;
 	int							m_leftBorder;
 	int							m_bottomBorder;
+	int							mouseX;
+	int							mouseY;
 
-	std::vector<ObjectType>		m_grid;
+	//std::vector<ObjectType>		m_grid;
 	std::vector<bool>			m_hover;
 	// this list holds all the units on the board
 	std::vector<Unit>			m_units;
