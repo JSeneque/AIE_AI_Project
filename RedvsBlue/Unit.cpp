@@ -4,10 +4,12 @@
 
 Unit::Unit()
 {
-	m_isSelected = false;
+	m_gridIndex = -1;
+	m_faction = NoFaction;
+	/*m_isSelected = false;
 	m_isActive = false;
 	m_movementCost = 3;
-	m_Team = NoTeam;
+	m_Team = NoTeam;*/
 }
 
 
@@ -15,6 +17,27 @@ Unit::~Unit()
 {
 }
 
+int Unit::getPosition()
+{
+	return m_gridIndex;
+}
+
+void Unit::setPosition(int index)
+{
+	m_gridIndex = index;
+}
+
+void Unit::setFaction(Faction faction)
+{
+	m_faction = faction;
+}
+
+Faction Unit::getFaction()
+{
+	return m_faction;
+}
+
+/*
 void Unit::setIsSelected(bool flag)
 {
 	m_isSelected = flag;
@@ -34,3 +57,4 @@ void Unit::setTeam(Team team) {
 //	m_isSelected = other.m_isSelected;
 //	return *this;
 //}
+*/

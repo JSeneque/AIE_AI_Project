@@ -2,10 +2,7 @@
 
 #include <iostream>
 
-//
-//GridMap::GridMap()
-//{
-//}
+
 
 
 GridMap::~GridMap()
@@ -87,6 +84,7 @@ void GridMap::draw(aie::Renderer2D* renderer)
 {
 	drawTiles(renderer);
 	//drawGridLine(renderer);
+	drawUnits(renderer);
 }
 
 void GridMap::drawTiles(aie::Renderer2D* renderer)
@@ -115,6 +113,29 @@ void GridMap::drawTiles(aie::Renderer2D* renderer)
 	}
 }
 
+void GridMap::drawUnits(aie::Renderer2D* renderer)
+{
+	// draw map
+	for (int i = 0; i < m_units.size(); ++i)
+	{
+		int index = m_units[i].getPosition();
+		// screen coordinates
+		int x = getScreenCoordinateX(index);
+		int y = getScreenCoordinateY(index);
+
+		// set the unit colour
+		Faction faction = m_units[i].getFaction();
+
+		if (faction == BlueFaction)
+			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
+		else if (faction == RedFaction)
+			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
+		
+		// draw unit
+		renderer->drawCircle(x , y , m_tileSize / 4);
+	}
+}
+
 void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 {
 	// maybe turn this into helper if I do this again
@@ -126,11 +147,34 @@ void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 	int screenX = getScreenCoordinateX(index);
 	int screenY = getScreenCoordinateY(index);
 
+	float lineThickness = 5.0f;
+
 	// check index is in range
 	if ((gridX < m_columns && gridY < m_rows) && !(gridX == 0 || gridX == m_columns - 1 || gridY == 0 || gridY == m_rows - 1))
 	{
-		renderer->setRenderColour(0.6, 0.8, .20, 1);
-		renderer->drawBox(screenX, screenY, m_tileSize, m_tileSize);
+		renderer->setRenderColour(1, 1, 1, 1);
+
+		// top left horizontal line
+		renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, (screenX + (m_tileSize * 0.25)) - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, lineThickness);
+		// top right horizontal line
+		renderer->drawLine(screenX + (m_tileSize * 0.25), screenY - (m_tileSize / 2) + m_tileSize, screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, lineThickness);
+
+		// bottom left horizontal line
+		renderer->drawLine(screenX - (m_tileSize / 2) , screenY - (m_tileSize /2 ), (screenX + (m_tileSize * 0.25)) - (m_tileSize / 2), screenY - (m_tileSize / 2), lineThickness);
+		// bottom right horizontal line
+		renderer->drawLine(screenX + (m_tileSize * 0.25), screenY - (m_tileSize / 2), screenX + (m_tileSize / 2), screenY - (m_tileSize / 2), lineThickness);
+
+		// top left vertical line
+		renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize - (m_tileSize * 0.25), lineThickness);
+
+		// top right vertical line
+		renderer->drawLine(screenX + (m_tileSize * 0.5), screenY - (m_tileSize / 2) + m_tileSize, screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize - (m_tileSize * 0.25), lineThickness);
+	
+		// bottom left vertical line
+		renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) , screenX - (m_tileSize / 2), screenY - (m_tileSize / 2)  + (m_tileSize * 0.25), lineThickness);
+
+		// bottom right vertical line
+		renderer->drawLine(screenX + (m_tileSize * 0.5), screenY - (m_tileSize / 2), screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + (m_tileSize * 0.25), lineThickness);
 	}
 }
 
@@ -149,4 +193,15 @@ void GridMap::drawGridLine(aie::Renderer2D* renderer)
 	{
 		renderer->drawLine(0, i * m_tileSize, m_columns * m_tileSize, i * m_tileSize);
 	}
+}
+
+void GridMap::addUnit(Unit unit)
+{
+	m_units.push_back(unit);
+}
+
+int GridMap::getColumn(int index)
+{
+	// if index = row * m_columns + column;
+	return 1;
 }

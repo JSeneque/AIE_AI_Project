@@ -37,11 +37,11 @@ void BoardManager::Initialise()
 	m_gridMap->Print();
 
 	//m_grid.clear();
-	m_units.clear();
+	//m_units.clear();
 /*
 	m_grid.resize(m_columns * m_rows);*/
 	m_hover.resize(m_columns * m_rows);
-	m_units.resize(m_columns * m_rows);
+	//m_units.resize(m_columns * m_rows);
 
 	m_lastSelectedUnit = 999999;
 
@@ -96,9 +96,14 @@ void BoardManager::SetupScene(int level)
 
 void BoardManager::Draw(aie::Renderer2D* renderer)
 {
+	// draw the map
 	m_gridMap->draw(renderer);
+	// show where mouse is
 	m_gridMap->drawHover(renderer, mouseX, mouseY);
+	// draw grid lines
 	m_gridMap->drawGridLine(renderer);
+
+
 		
 		//// draw movement
 		//if (m_lastSelectedUnit != 999999)
@@ -138,7 +143,12 @@ void BoardManager::Update(aie::Input* input)
 	// highlight the grid cell the mouse is over
 	mouseX = input->getMouseX();
 	mouseY = input->getMouseY();
+
+	UpdateUnits();
 		
+	// if the players clicks the left mouse button, is that grid cell occupied
+	// 
+
 	// detect a left click on a unit
 	//if (input->wasMouseButtonPressed(0))
 	//{
@@ -215,13 +225,23 @@ void BoardManager::ClearHoverList()
 	}
 }
 
-void BoardManager::PlaceUnits()
+void BoardManager::UpdateUnits()
 {
 	Unit unit;
-	m_units.at(55).setTeam(Red);
-	m_units.at(55).setActive(true);
-	m_units.at(58).setTeam(Blue);
-	m_units.at(58).setActive(true);
+
+	unit.setPosition(51);
+	unit.setFaction(BlueFaction);
+	m_gridMap->addUnit(unit);
+
+	unit.setPosition(68);
+	unit.setFaction(RedFaction);
+	m_gridMap->addUnit(unit);
+
+	std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
+	//m_units.at(55).setTeam(Red);
+	//m_units.at(55).setActive(true);
+	//m_units.at(58).setTeam(Blue);
+	//m_units.at(58).setActive(true);
 
 }
 

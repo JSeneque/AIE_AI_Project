@@ -37,7 +37,7 @@ private:
 	void BuildNodeList();
 	//void BuildLandscape();
 	//void FillOutLevel();
-	void PlaceUnits();
+	void UpdateUnits();
 	void ShowMovementArea(Unit unit, Node* startNode);
 	void DrawMovementArea(aie::Renderer2D* renderer);
 
@@ -55,8 +55,7 @@ private:
 
 	//std::vector<ObjectType>		m_grid;
 	std::vector<bool>			m_hover;
-	// this list holds all the units on the board
-	std::vector<Unit>			m_units;
+	
 	// combined the others lists into a weighted nodes
 	std::vector<Node>			m_nodeList;
 

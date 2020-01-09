@@ -20,7 +20,6 @@ public:
 
 	~GridMap();
 	void CreateMap();
-	
 	void Print();
 
 public:
@@ -32,11 +31,15 @@ public:
 	void draw(aie::Renderer2D* renderer);
 	void drawHover(aie::Renderer2D* renderer, int x, int y);
 	void drawGridLine(aie::Renderer2D* renderer);
+	void addUnit(Unit unit);
 
 private:
 	void drawTiles(aie::Renderer2D* renderer);
+	void drawUnits(aie::Renderer2D* renderer);
 	int getScreenCoordinateX(int const index) const;
 	int getScreenCoordinateY(int const index) const;
+	int getColumn(int index);
+	int getRow(int index);
 	
 
 private:
@@ -44,7 +47,8 @@ private:
 	int							m_rows;
 	int							m_tileSize;
 	std::vector<ObjectType>		m_grid;
-
+	// this list holds all the units on the board
+	std::vector<Unit>			m_units;
 
 };
 

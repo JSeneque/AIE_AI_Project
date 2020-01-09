@@ -8,10 +8,10 @@ enum ObjectType {
 
 };
  
-enum Team {
-	NoTeam,
-	Red,
-	Blue
+enum Faction {
+	NoFaction,
+	RedFaction,
+	BlueFaction
 };
 
 enum Event {
