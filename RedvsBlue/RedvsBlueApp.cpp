@@ -20,7 +20,8 @@ bool RedvsBlueApp::startup() {
 	m_font = new aie::Font("../bin/font/consolas.ttf", 32);
 
 	// create a 8x6 grid board
-	m_board = new BoardManager(10, 10, 64);
+	//m_board = new BoardManager(10, 10, 64);
+	m_board = new BoardManager();
 	m_board->SetupScene(1);
 
 	return true;

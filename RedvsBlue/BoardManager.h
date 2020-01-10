@@ -11,12 +11,9 @@ class BoardManager
 {
 public:
 	BoardManager();
-	BoardManager(int c, int r, int t) : m_columns{ c }, m_rows{ r }, m_tileSize{ t } {};
 	~BoardManager();
 
-	void Start();
 	void SetupScene(int level);
-	void Print();
 	void Draw(aie::Renderer2D* renderer);
 	void Update(aie::Input* input);
 	
@@ -33,30 +30,12 @@ public:
 
 private:
 	void Initialise();
-	void ClearHoverList();
-	void BuildNodeList();
-	//void BuildLandscape();
-	//void FillOutLevel();
 	void UpdateUnits();
-	void ShowMovementArea(Unit unit, Node* startNode);
-	void DrawMovementArea(aie::Renderer2D* renderer);
 
 private:
-	int							m_columns;
-	int							m_rows;
-	Count*						m_waterTileCount;
-	
 	aie::Renderer2D*			m_2dRenderer;
-	int							m_tileSize;
-	int							m_leftBorder;
-	int							m_bottomBorder;
 	int							mouseX;
 	int							mouseY;
-
-	//std::vector<ObjectType>		m_grid;
-	std::vector<bool>			m_hover;
-	
-	// combined the others lists into a weighted nodes
 	std::vector<Node>			m_nodeList;
 
 	Node*						m_startPoint;
