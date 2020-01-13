@@ -22,12 +22,12 @@ void GridMap::CreateMap()
 			if (x == 0 || x == m_columns - 1 || y == 0 || y == m_rows - 1)
 			{
 				// draw water tile
-				m_grid.at(getGridIndex(x, y)) = Water;
+				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Water;
 			}
 			else
 			{
 				// draw a ground tile
-				m_grid.at(getGridIndex(x,y)) = Ground;
+				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Ground;
 			}
 		}
 	}
@@ -40,9 +40,25 @@ void GridMap::Print()
 }
 
 // returns the grid index from coordinates
-int  GridMap::getGridIndex(int const column, int const row) const
+//int  GridMap::getGridIndex(int const column, int const row) const
+//{
+//	return row * m_columns + column;
+//}
+
+int  GridMap::getGridIndex(int const mouseX, int const mouseY) const
 {
-	return row * m_columns + column;
+	if (CheckBounds(mouseX,mouseY)) 
+	{
+		// get the column based on the x position
+		int column = mouseX / m_tileSize;
+		// get the row based on the yt position
+		int row = mouseY / m_tileSize;
+
+		//return column + m_columns * row;
+		return row * m_columns + column;
+	}
+	return -1;
+	
 }
 
 int  GridMap::getScreenCoordinateX(int const index) const
@@ -139,10 +155,10 @@ void GridMap::drawUnits(aie::Renderer2D* renderer)
 void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 {
 	// maybe turn this into helper if I do this again
-	int gridX = mouseX / m_tileSize;
-	int gridY = mouseY / m_tileSize;
+	int gridX = getColumn(mouseX);
+	int gridY = getRow(mouseY);
 
-	int index = getGridIndex(gridX, gridY);
+	int index = getGridIndex(mouseX, mouseY);
 
 	int screenX = getScreenCoordinateX(index);
 	int screenY = getScreenCoordinateY(index);
@@ -200,8 +216,18 @@ void GridMap::addUnit(Unit unit)
 	m_units.push_back(unit);
 }
 
-int GridMap::getColumn(int index)
+int GridMap::getColumn(int mouseX) const
 {
-	// if index = row * m_columns + column;
-	return 1;
+	return mouseX / m_tileSize;
 }
+
+int GridMap::getRow(int mouseY) const
+{
+	return mouseY / m_tileSize;
+}
+
+bool GridMap::CheckBounds(int const mouseX, int const mouseY) const
+{
+	return (m_columns > getColumn(mouseX) && (m_rows > getRow(mouseY)));
+}
+

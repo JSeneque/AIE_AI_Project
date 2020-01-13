@@ -23,7 +23,7 @@ public:
 	void Print();
 
 public:
-	int getGridIndex(int const column, int const row) const;
+	int getGridIndex(int const mouseX, int const mouseY) const;
 
 	void setTileAt(int x, int y, ObjectType tileType);
 	int getGridSize();
@@ -32,14 +32,16 @@ public:
 	void drawHover(aie::Renderer2D* renderer, int x, int y);
 	void drawGridLine(aie::Renderer2D* renderer);
 	void addUnit(Unit unit);
+	int getColumn(int const mouseX) const;
+	int getRow(int const mouseY) const;
+	bool CheckBounds(int const mouseX, int const mouseY) const;
 
 private:
 	void drawTiles(aie::Renderer2D* renderer);
 	void drawUnits(aie::Renderer2D* renderer);
 	int getScreenCoordinateX(int const index) const;
 	int getScreenCoordinateY(int const index) const;
-	int getColumn(int index);
-	int getRow(int index);
+	
 	
 
 private:

@@ -56,10 +56,25 @@ void BoardManager::Update(aie::Input* input)
 	mouseX = input->getMouseX();
 	mouseY = input->getMouseY();
 
+	int index = m_gridMap->getGridIndex(mouseX, mouseY);
+
 	UpdateUnits();
-		
+	bool check;
+
+	check = m_gridMap->CheckBounds(mouseX, mouseY);
+
+	// check within bounds
+	std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << std::endl ;
+
 	// if the players clicks the left mouse button, is that grid cell occupied
-	// 
+	if (input->wasMouseButtonPressed(0))
+	{
+		// which grid cell was clicked on
+
+		// is there a unit in that cell
+
+		// change the state of the unit to be selected
+	}
 
 	// detect a left click on a unit
 	//if (input->wasMouseButtonPressed(0))
@@ -141,6 +156,6 @@ void BoardManager::UpdateUnits()
 	unit.setFaction(RedFaction);
 	m_gridMap->addUnit(unit);
 
-	std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
+	//std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
 
 }
