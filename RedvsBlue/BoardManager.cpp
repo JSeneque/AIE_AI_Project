@@ -42,6 +42,7 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 {
 	// draw the map
 	m_gridMap->draw(renderer);
+	drawUnits(renderer);
 	// show where mouse is
 	m_gridMap->drawHover(renderer, mouseX, mouseY);
 	// draw grid lines
@@ -64,13 +65,14 @@ void BoardManager::Update(aie::Input* input)
 	check = m_gridMap->CheckBounds(mouseX, mouseY);
 
 	// check within bounds
-	std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << std::endl ;
+	
 
 	// if the players clicks the left mouse button, is that grid cell occupied
 	if (input->wasMouseButtonPressed(0))
 	{
 		// which grid cell was clicked on
-
+		check = m_gridMap->CheckBounds(mouseX, mouseY);
+		std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << std::endl;
 		// is there a unit in that cell
 
 		// change the state of the unit to be selected
@@ -150,12 +152,42 @@ void BoardManager::UpdateUnits()
 
 	unit.setPosition(51);
 	unit.setFaction(BlueFaction);
-	m_gridMap->addUnit(unit);
+	addUnit(unit);
 
 	unit.setPosition(68);
 	unit.setFaction(RedFaction);
-	m_gridMap->addUnit(unit);
+	addUnit(unit);
 
 	//std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
 
 }
+
+void BoardManager::drawUnits(aie::Renderer2D* renderer)
+{
+	// draw map
+	for (int i = 0; i < m_units.size(); ++i)
+	{
+		int index = m_units[i].getPosition();
+		// screen coordinates
+		int x = m_gridMap->getScreenCoordinateX(index);
+		int y = m_gridMap->getScreenCoordinateY(index);
+
+		// set the unit colour
+		Faction faction = m_units[i].getFaction();
+
+		if (faction == BlueFaction)
+			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
+		else if (faction == RedFaction)
+			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
+
+		// draw unit
+		renderer->drawCircle(x, y, m_gridMap->getGridSize() / 4);
+	}
+}
+
+void BoardManager::addUnit(Unit unit)
+{
+	m_units.push_back(unit);
+}
+
+

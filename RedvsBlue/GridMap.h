@@ -31,16 +31,17 @@ public:
 	void draw(aie::Renderer2D* renderer);
 	void drawHover(aie::Renderer2D* renderer, int x, int y);
 	void drawGridLine(aie::Renderer2D* renderer);
-	void addUnit(Unit unit);
+	//void addUnit(Unit unit);
 	int getColumn(int const mouseX) const;
 	int getRow(int const mouseY) const;
 	bool CheckBounds(int const mouseX, int const mouseY) const;
+	int getScreenCoordinateX(int const index) const;
+	int getScreenCoordinateY(int const index) const;
 
 private:
 	void drawTiles(aie::Renderer2D* renderer);
-	void drawUnits(aie::Renderer2D* renderer);
-	int getScreenCoordinateX(int const index) const;
-	int getScreenCoordinateY(int const index) const;
+	//void drawUnits(aie::Renderer2D* renderer);
+	
 	
 	
 
@@ -50,7 +51,7 @@ private:
 	int							m_tileSize;
 	std::vector<ObjectType>		m_grid;
 	// this list holds all the units on the board
-	std::vector<Unit>			m_units;
+	//std::vector<Unit>			m_units;
 
 };
 

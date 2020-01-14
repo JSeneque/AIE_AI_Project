@@ -100,7 +100,7 @@ void GridMap::draw(aie::Renderer2D* renderer)
 {
 	drawTiles(renderer);
 	//drawGridLine(renderer);
-	drawUnits(renderer);
+	//drawUnits(renderer);
 }
 
 void GridMap::drawTiles(aie::Renderer2D* renderer)
@@ -129,28 +129,28 @@ void GridMap::drawTiles(aie::Renderer2D* renderer)
 	}
 }
 
-void GridMap::drawUnits(aie::Renderer2D* renderer)
-{
-	// draw map
-	for (int i = 0; i < m_units.size(); ++i)
-	{
-		int index = m_units[i].getPosition();
-		// screen coordinates
-		int x = getScreenCoordinateX(index);
-		int y = getScreenCoordinateY(index);
-
-		// set the unit colour
-		Faction faction = m_units[i].getFaction();
-
-		if (faction == BlueFaction)
-			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
-		else if (faction == RedFaction)
-			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
-		
-		// draw unit
-		renderer->drawCircle(x , y , m_tileSize / 4);
-	}
-}
+//void GridMap::drawUnits(aie::Renderer2D* renderer)
+//{
+//	// draw map
+//	for (int i = 0; i < m_units.size(); ++i)
+//	{
+//		int index = m_units[i].getPosition();
+//		// screen coordinates
+//		int x = getScreenCoordinateX(index);
+//		int y = getScreenCoordinateY(index);
+//
+//		// set the unit colour
+//		Faction faction = m_units[i].getFaction();
+//
+//		if (faction == BlueFaction)
+//			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
+//		else if (faction == RedFaction)
+//			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
+//		
+//		// draw unit
+//		renderer->drawCircle(x , y , m_tileSize / 4);
+//	}
+//}
 
 void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 {
@@ -211,10 +211,10 @@ void GridMap::drawGridLine(aie::Renderer2D* renderer)
 	}
 }
 
-void GridMap::addUnit(Unit unit)
-{
-	m_units.push_back(unit);
-}
+//void GridMap::addUnit(Unit unit)
+//{
+//	m_units.push_back(unit);
+//}
 
 int GridMap::getColumn(int mouseX) const
 {

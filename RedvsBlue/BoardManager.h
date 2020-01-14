@@ -16,6 +16,7 @@ public:
 	void SetupScene(int level);
 	void Draw(aie::Renderer2D* renderer);
 	void Update(aie::Input* input);
+	void addUnit(Unit unit);
 	
 
 	// acts as a range
@@ -31,6 +32,7 @@ public:
 private:
 	void Initialise();
 	void UpdateUnits();
+	void drawUnits(aie::Renderer2D* renderer);
 
 private:
 	aie::Renderer2D*			m_2dRenderer;
@@ -46,5 +48,6 @@ private:
 	std::list<const Node*>		m_movementArea;
 
 	GridMap*					m_gridMap;
+	std::vector<Unit>			m_units;
 };
 
