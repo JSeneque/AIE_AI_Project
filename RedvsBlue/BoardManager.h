@@ -33,6 +33,7 @@ private:
 	void Initialise();
 	void UpdateUnits();
 	void drawUnits(aie::Renderer2D* renderer);
+	bool isUnitThere(int index);
 
 private:
 	aie::Renderer2D*			m_2dRenderer;

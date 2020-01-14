@@ -4,6 +4,7 @@
 #include "Global.h"
 #include <math.h>
 #include "GridMap.h"
+#include <algorithm>
 
 std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
@@ -72,9 +73,11 @@ void BoardManager::Update(aie::Input* input)
 	{
 		// which grid cell was clicked on
 		check = m_gridMap->CheckBounds(mouseX, mouseY);
-		std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << std::endl;
+		
 		// is there a unit in that cell
+		bool unitSelected = isUnitThere(index);
 
+		std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Selected: " << (unitSelected ? " YES" : " NO") << std::endl;
 		// change the state of the unit to be selected
 	}
 
@@ -190,4 +193,19 @@ void BoardManager::addUnit(Unit unit)
 	m_units.push_back(unit);
 }
 
+// expensive but simplified version first
+bool BoardManager::isUnitThere(int index)
+{
+	// check each unit's position
+	for (auto& unit : m_units)
+	{
+		if (unit.getPosition() == index)
+		{
+			return true;
+			break;
+		}
+	}
+
+	return false;
+}
 
