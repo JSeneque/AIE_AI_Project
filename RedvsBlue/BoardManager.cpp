@@ -24,7 +24,19 @@ void BoardManager::Initialise()
 	m_gridMap->CreateMap();
 	m_gridMap->Print();
 
-	m_lastSelectedUnit = 999999;
+	m_selectedUnitIndex = -1;
+	m_selectedUnit = nullptr;
+
+	Unit unit;
+
+	unit.setPosition(51);
+	unit.setFaction(BlueFaction);
+	addUnit(unit);
+
+	unit.setPosition(68);
+	unit.setFaction(RedFaction);
+	addUnit(unit);
+
 }
 
 void BoardManager::SetupScene(int level)
@@ -75,9 +87,24 @@ void BoardManager::Update(aie::Input* input)
 		check = m_gridMap->CheckBounds(mouseX, mouseY);
 		
 		// is there a unit in that cell
-		bool unitSelected = isUnitThere(index);
+		if (isUnitThere(index))
+		{
+			// save the index of the selected unit
+			//m_selectedUnitIndex = index;
+			//std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Selected At: " << m_selectedUnit->getPosition() << std::endl;
+		} 
+		else {
+			// check if a unit has already been selected then move it to the clicked location
+			if (m_selectedUnit != nullptr)
+			{
+				m_selectedUnit->setPosition(index);
+				m_selectedUnit = nullptr;
+				//std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Move To: " << m_selectedUnit->getPosition << std::endl;
+			} 
+			
+		}
 
-		std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Selected: " << (unitSelected ? " YES" : " NO") << std::endl;
+		
 		// change the state of the unit to be selected
 	}
 
@@ -151,15 +178,7 @@ void BoardManager::Update(aie::Input* input)
 
 void BoardManager::UpdateUnits()
 {
-	Unit unit;
-
-	unit.setPosition(51);
-	unit.setFaction(BlueFaction);
-	addUnit(unit);
-
-	unit.setPosition(68);
-	unit.setFaction(RedFaction);
-	addUnit(unit);
+	
 
 	//std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
 
@@ -201,11 +220,15 @@ bool BoardManager::isUnitThere(int index)
 	{
 		if (unit.getPosition() == index)
 		{
+			// save the unit
+			m_selectedUnit = &unit;
 			return true;
-			break;
+			//break;
 		}
 	}
 
+	// null out the selected unit
+	//m_selectedUnit = nullptr;
 	return false;
 }
 

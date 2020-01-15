@@ -45,10 +45,11 @@ private:
 	Node*						m_endPoint;
 
 	std::list<const Node*>		m_path;
-	int							m_lastSelectedUnit;
 	std::list<const Node*>		m_movementArea;
 
 	GridMap*					m_gridMap;
 	std::vector<Unit>			m_units;
+	int							m_selectedUnitIndex;
+	Unit*						m_selectedUnit;
 };
 
