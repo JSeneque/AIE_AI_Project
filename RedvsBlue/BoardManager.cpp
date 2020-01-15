@@ -30,10 +30,13 @@ void BoardManager::Initialise()
 	Unit unit;
 
 	unit.setPosition(51);
+	unit.setHasMoved(false);
 	unit.setFaction(BlueFaction);
 	addUnit(unit);
+	
 
 	unit.setPosition(68);
+	unit.setHasMoved(false);
 	unit.setFaction(RedFaction);
 	addUnit(unit);
 
@@ -218,7 +221,8 @@ bool BoardManager::isUnitThere(int index)
 	// check each unit's position
 	for (auto& unit : m_units)
 	{
-		if (unit.getPosition() == index)
+		// is there a unit in that position that hasn't moved yet
+		if (unit.getPosition() == index && !unit.getHasMoved())
 		{
 			// save the unit
 			m_selectedUnit = &unit;
