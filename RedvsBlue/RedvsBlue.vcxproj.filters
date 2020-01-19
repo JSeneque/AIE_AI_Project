@@ -80,5 +80,8 @@
     <ClInclude Include="GridMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UnitState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

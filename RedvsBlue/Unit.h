@@ -1,6 +1,18 @@
 #pragma once
 #include "Global.h"
 #include "Renderer2D.h"
+#include <string>
+
+class Faction
+{
+public:
+	std::string getName() const { return name; }
+	void setName(std::string name_) { name = name_; }
+
+private:
+	std::string name;
+
+};
 
 class Unit
 {
@@ -11,8 +23,8 @@ public:
 	int getPosition();
 	void setPosition(int index);
 
-	void setFaction(Faction faction);
-	Faction getFaction();
+	void setFaction(std::string faction);
+	std::string getFaction();
 
 	void setHasMoved(bool value);
 	bool getHasMoved();
@@ -21,5 +33,6 @@ private:
 	int m_gridIndex;
 	Faction m_faction;
 	bool m_hasMoved;
+	//Faction m_faction;
 };
 

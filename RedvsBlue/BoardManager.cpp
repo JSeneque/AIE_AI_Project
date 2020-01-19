@@ -24,6 +24,9 @@ void BoardManager::Initialise()
 	m_gridMap->CreateMap();
 	m_gridMap->Print();
 
+	// the blue factions goes first
+	m_activeFaction.setName("BlueFaction");
+
 	m_selectedUnitIndex = -1;
 	m_selectedUnit = nullptr;
 
@@ -31,13 +34,13 @@ void BoardManager::Initialise()
 
 	unit.setPosition(51);
 	unit.setHasMoved(false);
-	unit.setFaction(BlueFaction);
+	unit.setFaction("BlueFaction");
 	addUnit(unit);
 	
 
 	unit.setPosition(68);
 	unit.setHasMoved(false);
-	unit.setFaction(RedFaction);
+	unit.setFaction("RedFaction");
 	addUnit(unit);
 
 }
@@ -69,16 +72,22 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 
 void BoardManager::Update(aie::Input* input)
 {
+	// check that all the units of the active faction had their turn
+	// if yes, set the new turn to the other faction
+	// reset all units of active faction to 'Ready'state
+	CheckTurn();
+
+
 	// highlight the grid cell the mouse is over
 	mouseX = input->getMouseX();
 	mouseY = input->getMouseY();
 
 	int index = m_gridMap->getGridIndex(mouseX, mouseY);
 
-	UpdateUnits();
+	
 	bool check;
 
-	check = m_gridMap->CheckBounds(mouseX, mouseY);
+	//check = m_gridMap->CheckBounds(mouseX, mouseY);
 
 	// check within bounds
 	
@@ -98,7 +107,7 @@ void BoardManager::Update(aie::Input* input)
 		} 
 		else {
 			// check if a unit has already been selected then move it to the clicked location
-			if (m_selectedUnit != nullptr)
+			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction.getName())
 			{
 				m_selectedUnit->setPosition(index);
 				m_selectedUnit = nullptr;
@@ -198,11 +207,11 @@ void BoardManager::drawUnits(aie::Renderer2D* renderer)
 		int y = m_gridMap->getScreenCoordinateY(index);
 
 		// set the unit colour
-		Faction faction = m_units[i].getFaction();
+		//Faction faction = m_units[i].getFaction();
 
-		if (faction == BlueFaction)
+		if (m_units[i].getFaction() == "BlueFaction")
 			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
-		else if (faction == RedFaction)
+		else 
 			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
 
 		// draw unit
@@ -236,3 +245,38 @@ bool BoardManager::isUnitThere(int index)
 	return false;
 }
 
+void BoardManager::CheckTurn() 
+{
+	bool allMoved = true;
+	// get each of the units
+	for (auto& unit : m_units)
+	{
+		// if all units has moved, change the action faction
+		if (!unit.getHasMoved() && unit.getFaction() == m_activeFaction.getName())
+		{
+			allMoved = false;
+			//break;
+		}
+	}
+	
+	if (allMoved)
+	{
+		ChangeTurn();
+	}
+}
+
+void BoardManager::ChangeTurn() 
+{
+	// change faction's turn
+	(m_activeFaction.getName() == "BlueFaction" ? m_activeFaction.setName("RedFaction") : m_activeFaction.setName("BlueFaction"));
+
+	// reset all the units to ready state
+	for (auto& unit : m_units)
+	{
+		// if all units has moved, change the action faction
+		if (unit.getFaction() == m_activeFaction.getName())
+		{
+			unit.setHasMoved(false);
+		}
+	}
+}

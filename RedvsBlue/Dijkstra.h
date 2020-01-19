@@ -158,4 +158,28 @@ std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode) {
 
 
 
+std::list<const Node*> BreadthFirstSearch(Node* startNode)
+{
+	// validate the passed node
+	if (!startNode) {
+		throw std::runtime_error("Null nodes passed in!");
+	}
 
+	// initialise the starting node
+	startNode->runningCost = 0.0f;
+	startNode->parent = nullptr;
+
+	std::list<Node*> openList;
+	std::list<const Node*> closedList;
+
+	// add the start node to the open list
+	openList.push_back(startNode);
+
+	// process while the open list is not empty
+	while (!openList.empty())
+	{
+
+	}
+
+	return closedList;
+}

@@ -34,6 +34,8 @@ private:
 	void UpdateUnits();
 	void drawUnits(aie::Renderer2D* renderer);
 	bool isUnitThere(int index);
+	void CheckTurn();
+	void ChangeTurn();
 
 private:
 	aie::Renderer2D*			m_2dRenderer;
@@ -51,5 +53,6 @@ private:
 	std::vector<Unit>			m_units;
 	int							m_selectedUnitIndex;
 	Unit*						m_selectedUnit;
+	Faction						m_activeFaction;
 };
 
