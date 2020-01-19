@@ -83,5 +83,8 @@
     <ClInclude Include="UnitState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ReadyState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

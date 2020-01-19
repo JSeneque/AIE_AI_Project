@@ -8,11 +8,11 @@ enum ObjectType {
 
 };
  
-//enum Faction {
-//	NoFaction,
-//	RedFaction,
-//	BlueFaction
-//};
+enum class Faction {
+	NoFaction,
+	RedFaction,
+	BlueFaction
+};
 
 enum Event {
 	UNIT_SELECTED

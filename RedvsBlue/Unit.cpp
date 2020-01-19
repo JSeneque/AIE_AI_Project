@@ -5,7 +5,7 @@
 Unit::Unit()
 {
 	m_gridIndex = -1;
-	m_faction.setName("NoFaction");
+	m_faction = Faction::NoFaction;
 	m_hasMoved = false;
 }
 
@@ -25,14 +25,14 @@ void Unit::setPosition(int index)
 	m_hasMoved = true;
 }
 
-void Unit::setFaction(std::string name)
+void Unit::setFaction(Faction faction)
 {
-	m_faction.setName(name);
+	m_faction = faction;
 }
 
-std::string Unit::getFaction()
+Faction Unit::getFaction()
 {
-	return m_faction.getName();
+	return m_faction;
 }
 
 void Unit::setHasMoved (bool value)

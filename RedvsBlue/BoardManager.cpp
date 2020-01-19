@@ -25,7 +25,8 @@ void BoardManager::Initialise()
 	m_gridMap->Print();
 
 	// the blue factions goes first
-	m_activeFaction.setName("BlueFaction");
+	//m_activeFaction.setName("BlueFaction");
+	m_activeFaction = Faction::BlueFaction;
 
 	m_selectedUnitIndex = -1;
 	m_selectedUnit = nullptr;
@@ -34,13 +35,13 @@ void BoardManager::Initialise()
 
 	unit.setPosition(51);
 	unit.setHasMoved(false);
-	unit.setFaction("BlueFaction");
+	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 	
 
 	unit.setPosition(68);
 	unit.setHasMoved(false);
-	unit.setFaction("RedFaction");
+	unit.setFaction(Faction::RedFaction);
 	addUnit(unit);
 
 }
@@ -107,7 +108,7 @@ void BoardManager::Update(aie::Input* input)
 		} 
 		else {
 			// check if a unit has already been selected then move it to the clicked location
-			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction.getName())
+			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction)
 			{
 				m_selectedUnit->setPosition(index);
 				m_selectedUnit = nullptr;
@@ -209,7 +210,7 @@ void BoardManager::drawUnits(aie::Renderer2D* renderer)
 		// set the unit colour
 		//Faction faction = m_units[i].getFaction();
 
-		if (m_units[i].getFaction() == "BlueFaction")
+		if (m_units[i].getFaction() == Faction::BlueFaction)
 			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
 		else 
 			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
@@ -252,7 +253,7 @@ void BoardManager::CheckTurn()
 	for (auto& unit : m_units)
 	{
 		// if all units has moved, change the action faction
-		if (!unit.getHasMoved() && unit.getFaction() == m_activeFaction.getName())
+		if (!unit.getHasMoved() && unit.getFaction() == m_activeFaction)
 		{
 			allMoved = false;
 			//break;
@@ -268,15 +269,16 @@ void BoardManager::CheckTurn()
 void BoardManager::ChangeTurn() 
 {
 	// change faction's turn
-	(m_activeFaction.getName() == "BlueFaction" ? m_activeFaction.setName("RedFaction") : m_activeFaction.setName("BlueFaction"));
+	m_activeFaction = (m_activeFaction == Faction::BlueFaction ? Faction::RedFaction : Faction::BlueFaction);
 
 	// reset all the units to ready state
 	for (auto& unit : m_units)
 	{
 		// if all units has moved, change the action faction
-		if (unit.getFaction() == m_activeFaction.getName())
+		if (unit.getFaction() == m_activeFaction)
 		{
 			unit.setHasMoved(false);
+			//unit.state_ = &UnitState::ready;
 		}
 	}
 }
