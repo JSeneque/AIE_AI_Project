@@ -30,8 +30,8 @@ public:
 	void setFaction(Faction faction);
 	Faction getFaction();
 
-	void setHasMoved(bool value);
-	bool getHasMoved();
+	//void setHasMoved(bool value);
+	//bool getHasMoved();
 	
 	void setState(eState state_) { m_state = state_; }
 	eState getState() { return m_state; }
@@ -55,8 +55,8 @@ private:
 private:
 	int m_gridIndex;
 	Faction m_faction;
-	bool m_hasMoved;
-	eState m_state = eState::READY;
+	//bool m_hasMoved;
+	eState m_state;
 	
 };
 

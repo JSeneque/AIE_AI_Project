@@ -34,18 +34,18 @@ void BoardManager::Initialise()
 	Unit unit;
 
 	unit.setPosition(51);
-	unit.setHasMoved(false);
+	//unit.setHasMoved(false);
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 
 	unit.setPosition(61);
-	unit.setHasMoved(false);
+	//unit.setHasMoved(false);
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 	
 
 	unit.setPosition(68);
-	unit.setHasMoved(false);
+	//unit.setHasMoved(false);
 	unit.setFaction(Faction::RedFaction);
 	addUnit(unit);
 
@@ -116,6 +116,7 @@ void BoardManager::Update(aie::Input* input)
 			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction)
 			{
 				m_selectedUnit->setPosition(index);
+				m_selectedUnit->setState(eState::EXHAUSTED);
 				m_selectedUnit = nullptr;
 				//std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Move To: " << m_selectedUnit->getPosition << std::endl;
 			} 
@@ -236,7 +237,7 @@ bool BoardManager::isUnitThere(int index)
 	for (auto& unit : m_units)
 	{
 		// is there a unit in that position that hasn't moved yet
-		if (unit.getPosition() == index && !unit.getHasMoved() && unit.getFaction() == m_activeFaction)
+		if (unit.getPosition() == index && unit.getState() != eState::EXHAUSTED  && unit.getFaction() == m_activeFaction)
 		{
 			// save the unit
 			m_selectedUnit = &unit;
@@ -258,7 +259,7 @@ void BoardManager::CheckTurn()
 	for (auto& unit : m_units)
 	{
 		// if all units has moved, change the action faction
-		if (!unit.getHasMoved() && unit.getFaction() == m_activeFaction)
+		if (unit.getState() != eState::EXHAUSTED && unit.getFaction() == m_activeFaction)
 		{
 			allMoved = false;
 			//break;
@@ -282,7 +283,7 @@ void BoardManager::ChangeTurn()
 		// if all units has moved, change the action faction
 		if (unit.getFaction() == m_activeFaction)
 		{
-			unit.setHasMoved(false);
+			//unit.setHasMoved(false);
 			unit.setState(eState::READY);
 		}
 	}
