@@ -37,6 +37,11 @@ void BoardManager::Initialise()
 	unit.setHasMoved(false);
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
+
+	unit.setPosition(61);
+	unit.setHasMoved(false);
+	unit.setFaction(Faction::BlueFaction);
+	addUnit(unit);
 	
 
 	unit.setPosition(68);
@@ -77,8 +82,8 @@ void BoardManager::Update(aie::Input* input)
 	// if yes, set the new turn to the other faction
 	// reset all units of active faction to 'Ready'state
 	CheckTurn();
-
-
+	UpdateUnits();
+	
 	// highlight the grid cell the mouse is over
 	mouseX = input->getMouseX();
 	mouseY = input->getMouseY();
@@ -120,6 +125,8 @@ void BoardManager::Update(aie::Input* input)
 		
 		// change the state of the unit to be selected
 	}
+
+
 
 	// detect a left click on a unit
 	//if (input->wasMouseButtonPressed(0))
@@ -189,14 +196,6 @@ void BoardManager::Update(aie::Input* input)
 	//}
 }
 
-void BoardManager::UpdateUnits()
-{
-	
-
-	//std::cout << "Unit At(" << unit.getPosition() << ")" << std::endl;
-
-}
-
 void BoardManager::drawUnits(aie::Renderer2D* renderer)
 {
 	// draw map
@@ -228,14 +227,20 @@ void BoardManager::addUnit(Unit unit)
 // expensive but simplified version first
 bool BoardManager::isUnitThere(int index)
 {
+	// if there is a unit already selected, deseleted it (only if it has not moved already)
+	if (m_selectedUnit != nullptr && m_selectedUnit->getState() != eState::EXHAUSTED  && m_selectedUnit->getFaction() == m_activeFaction)
+	{
+		m_selectedUnit->setState(eState::READY);
+	}
 	// check each unit's position
 	for (auto& unit : m_units)
 	{
 		// is there a unit in that position that hasn't moved yet
-		if (unit.getPosition() == index && !unit.getHasMoved())
+		if (unit.getPosition() == index && !unit.getHasMoved() && unit.getFaction() == m_activeFaction)
 		{
 			// save the unit
 			m_selectedUnit = &unit;
+			unit.setState(eState::SELECTED);
 			return true;
 			//break;
 		}
@@ -278,7 +283,15 @@ void BoardManager::ChangeTurn()
 		if (unit.getFaction() == m_activeFaction)
 		{
 			unit.setHasMoved(false);
-			//unit.state_ = &UnitState::ready;
+			unit.setState(eState::READY);
 		}
+	}
+}
+
+void BoardManager::UpdateUnits()
+{
+	for (auto& unit : m_units)
+	{
+		unit.update();
 	}
 }

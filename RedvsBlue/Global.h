@@ -14,9 +14,7 @@ enum class Faction {
 	BlueFaction
 };
 
-enum Event {
-	UNIT_SELECTED
-};
+enum class eState { READY, SELECTED, EXHAUSTED };
 
 
 #define MAX_OBSERVERS 100
