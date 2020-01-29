@@ -36,6 +36,10 @@ private:
 	bool isUnitThere(int index);
 	void CheckTurn();
 	void ChangeTurn();
+	void HandleMouseInput(aie::Input* input);
+	void BuildNodeList();
+	void drawTileBorder(aie::Renderer2D* renderer);
+	bool validateMove(int index);
 
 private:
 	aie::Renderer2D*			m_2dRenderer;

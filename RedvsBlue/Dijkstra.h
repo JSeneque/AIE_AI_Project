@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 
-std::list<const Node*> FanOutCalculateRunningCost(Node* startNode)
+std::list<const Node*> ShowMovementArea(Node* startNode)
 {
 	// validate the passed node
 	if (!startNode) {

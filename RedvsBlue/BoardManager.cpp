@@ -24,8 +24,6 @@ void BoardManager::Initialise()
 	m_gridMap->CreateMap();
 	m_gridMap->Print();
 
-	// the blue factions goes first
-	//m_activeFaction.setName("BlueFaction");
 	m_activeFaction = Faction::BlueFaction;
 
 	m_selectedUnitIndex = -1;
@@ -34,33 +32,70 @@ void BoardManager::Initialise()
 	Unit unit;
 
 	unit.setPosition(51);
-	//unit.setHasMoved(false);
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 
 	unit.setPosition(61);
-	//unit.setHasMoved(false);
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 	
 
 	unit.setPosition(68);
-	//unit.setHasMoved(false);
 	unit.setFaction(Faction::RedFaction);
 	addUnit(unit);
 
+	unit.setPosition(48);
+	unit.setFaction(Faction::RedFaction);
+	addUnit(unit);
 }
 
 void BoardManager::SetupScene(int level)
 {
 	Initialise();
-	//BuildNodeList();
+	BuildNodeList();
+}
 
-	// hardcoded for prototyping purposes
-	//m_startPoint = &m_nodeList[55];
-	//m_endPoint = &m_nodeList[58];
+void BoardManager::BuildNodeList()
+{
+	int map_x_dim = m_gridMap->getGridSizeColumns();
+	int map_y_dim = m_gridMap->getGridSizeRows();
 
-	//m_path = DijkstraSearch(m_startPoint, m_endPoint);
+	// clears the node list
+	m_nodeList.clear();
+	// specifying the size of the grid
+	m_nodeList.resize(m_gridMap->getGridSize());
+	// initialise each node
+	for (int i = 0; i < m_nodeList.size(); ++i)
+	{
+		// set id
+		m_nodeList[i].id = i;
+		auto assignWeight = [&](int id) {
+			float weight = m_gridMap->getGridMapTile(i) == Terrain::Water ? 1000000.0f : 1.0f;
+			m_nodeList[i].outgoingEdges.push_back(Edge{ &m_nodeList[id], weight });
+		};
+		// check if we can add to the left
+		if (i%map_x_dim != 0)
+		{
+			assignWeight(i - 1);
+		}
+		// check if we can add to the right
+		if ((i + 1) % map_x_dim != 0)
+		{
+			assignWeight(i + 1);
+		}
+		// check if we can add to the top
+		if (i / map_x_dim != map_y_dim - 1)
+		{
+			assignWeight(i + map_x_dim);
+		}
+		// check if we can add to the bottom
+		if (i / map_x_dim != 0)
+		{
+			assignWeight(i - map_x_dim);
+		}
+
+	}
+
 }
 
 void BoardManager::Draw(aie::Renderer2D* renderer)
@@ -73,6 +108,12 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 	// draw grid lines
 	m_gridMap->drawGridLine(renderer);
 
+	if (m_selectedUnit) 
+	{
+		drawTileBorder(renderer);
+	}
+	
+
 }
 
 
@@ -83,119 +124,9 @@ void BoardManager::Update(aie::Input* input)
 	// reset all units of active faction to 'Ready'state
 	CheckTurn();
 	UpdateUnits();
-	
-	// highlight the grid cell the mouse is over
-	mouseX = input->getMouseX();
-	mouseY = input->getMouseY();
-
-	int index = m_gridMap->getGridIndex(mouseX, mouseY);
-
-	
-	bool check;
-
-	//check = m_gridMap->CheckBounds(mouseX, mouseY);
-
-	// check within bounds
-	
-
-	// if the players clicks the left mouse button, is that grid cell occupied
-	if (input->wasMouseButtonPressed(0))
-	{
-		// which grid cell was clicked on
-		check = m_gridMap->CheckBounds(mouseX, mouseY);
-		
-		// is there a unit in that cell
-		if (isUnitThere(index))
-		{
-			// save the index of the selected unit
-			//m_selectedUnitIndex = index;
-			//std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Selected At: " << m_selectedUnit->getPosition() << std::endl;
-		} 
-		else {
-			// check if a unit has already been selected then move it to the clicked location
-			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction)
-			{
-				m_selectedUnit->setPosition(index);
-				m_selectedUnit->setState(eState::EXHAUSTED);
-				m_selectedUnit = nullptr;
-				//std::cout << "Screen X: " << mouseX << " Index: " << index << " Bounds: " << (check ? " YES" : " NO") << " Unit Move To: " << m_selectedUnit->getPosition << std::endl;
-			} 
-			
-		}
-
-		
-		// change the state of the unit to be selected
-	}
-
-
-
-	// detect a left click on a unit
-	//if (input->wasMouseButtonPressed(0))
-	//{
-	//	
-	//	// get the index where the left click occurs
-	//	// get the mouse position in pixels and  convert into an index
-	//	int x = input->getMouseX() / m_tileSize;
-	//	int y = input->getMouseY() / m_tileSize;
-
-	//	std::cout << "Debug: Left Click at x: " << x << " y: " << y << std::endl;
-
-	//	// calculate the index from the x and y
-	//	int index = x + y * m_columns;
-
-	//	// there is a unit at that location and is not already selected
-	//	if (m_units[index].getActive() && index != m_lastSelectedUnit)
-	//	{
-	//		// set the unit as selected
-	//		m_units[index].setIsSelected(true);
-
-	//		// draw a path to initiate the running cost to draw the movement area
-	//		m_startPoint = &m_nodeList[index];
-
-	//		/*if (x <= m_columns / 2)
-	//			m_endPoint = &m_nodeList[m_columns + m_rows * m_columns];
-	//	*/
-
-	//		m_path = FanOutCalculateRunningCost(m_startPoint);
-
-	//		if (m_lastSelectedUnit != 999999)
-	//		{
-	//			m_units[m_lastSelectedUnit].setIsSelected(false);
-	//		}
-
-	//		m_lastSelectedUnit = index;
-
-	//		// show where the unit can move to
-	//		// Absolute (unit.x - tile.x) + Absolute(unit.y - tile.y) <= Unit.MovementCost
-	//		//ShowMovementArea(m_units[index], &m_nodeList[index]);
-	//	} 
-	//	else
-	//	{
-	//		if (m_lastSelectedUnit != 999999)
-	//		{
-	//			m_units[m_lastSelectedUnit].setIsSelected(false);
-	//			m_lastSelectedUnit = 999999;
-	//		}
-	//	}
-
-	//}
-	
-	//// debug to test distance formula
-	//if (input->wasMouseButtonPressed(1))
-	//{
-	//	if (m_lastSelectedUnit != 999999)
-	//	{
-	//		int x = input->getMouseX() / m_tileSize;
-	//		int y = input->getMouseY() / m_tileSize;
-
-	//		int index = x + y * m_columns;
-
-	//		m_endPoint = &m_nodeList[index];
-
-	//		m_path = DijkstraSearch(m_startPoint, m_endPoint);
-	//	}
-	//}
+	HandleMouseInput(input);
 }
+	
 
 void BoardManager::drawUnits(aie::Renderer2D* renderer)
 {
@@ -220,6 +151,49 @@ void BoardManager::drawUnits(aie::Renderer2D* renderer)
 	}
 }
 
+void BoardManager::drawTileBorder(aie::Renderer2D* renderer)
+{
+
+	int m_tileSize = m_gridMap->getTileSize();
+
+	renderer->setRenderColour(0, 1, 0, 1);
+
+	float lineThickness = 5.0f;
+
+	for (auto& node : m_path)
+	{
+		if (node->runningCost <= m_selectedUnit->getMoveCost())
+		{
+			int screenX = m_gridMap->getScreenCoordinateX(node->id);
+			int screenY = m_gridMap->getScreenCoordinateY(node->id);
+
+			// top left horizontal line
+			renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, (screenX + (m_tileSize * 0.25)) - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, lineThickness);
+			// top right horizontal line
+			renderer->drawLine(screenX + (m_tileSize * 0.25), screenY - (m_tileSize / 2) + m_tileSize, screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, lineThickness);
+
+			// bottom left horizontal line
+			renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2), (screenX + (m_tileSize * 0.25)) - (m_tileSize / 2), screenY - (m_tileSize / 2), lineThickness);
+			// bottom right horizontal line
+			renderer->drawLine(screenX + (m_tileSize * 0.25), screenY - (m_tileSize / 2), screenX + (m_tileSize / 2), screenY - (m_tileSize / 2), lineThickness);
+
+			// top left vertical line
+			renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize - (m_tileSize * 0.25), lineThickness);
+
+			// top right vertical line
+			renderer->drawLine(screenX + (m_tileSize * 0.5), screenY - (m_tileSize / 2) + m_tileSize, screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize - (m_tileSize * 0.25), lineThickness);
+
+			// bottom left vertical line
+			renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2), screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + (m_tileSize * 0.25), lineThickness);
+
+			// bottom right vertical line
+			renderer->drawLine(screenX + (m_tileSize * 0.5), screenY - (m_tileSize / 2), screenX + (m_tileSize / 2), screenY - (m_tileSize / 2) + (m_tileSize * 0.25), lineThickness);
+		}
+
+	}
+}
+	
+
 void BoardManager::addUnit(Unit unit)
 {
 	m_units.push_back(unit);
@@ -228,7 +202,7 @@ void BoardManager::addUnit(Unit unit)
 // expensive but simplified version first
 bool BoardManager::isUnitThere(int index)
 {
-	// if there is a unit already selected, deseleted it (only if it has not moved already)
+	// if there is a unit already selected, deselected it (only if it has not moved already)
 	if (m_selectedUnit != nullptr && m_selectedUnit->getState() != eState::EXHAUSTED  && m_selectedUnit->getFaction() == m_activeFaction)
 	{
 		m_selectedUnit->setState(eState::READY);
@@ -241,9 +215,13 @@ bool BoardManager::isUnitThere(int index)
 		{
 			// save the unit
 			m_selectedUnit = &unit;
+			// change the state of the unit
 			unit.setState(eState::SELECTED);
+			// build the areas the unit can move too
+			m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
+
 			return true;
-			//break;
+
 		}
 	}
 
@@ -262,7 +240,6 @@ void BoardManager::CheckTurn()
 		if (unit.getState() != eState::EXHAUSTED && unit.getFaction() == m_activeFaction)
 		{
 			allMoved = false;
-			//break;
 		}
 	}
 	
@@ -295,4 +272,60 @@ void BoardManager::UpdateUnits()
 	{
 		unit.update();
 	}
+}
+
+void BoardManager::HandleMouseInput(aie::Input* input)
+{
+	// highlight the grid cell the mouse is over
+	mouseX = input->getMouseX();
+	mouseY = input->getMouseY();
+
+	int index = m_gridMap->getGridIndex(mouseX, mouseY);
+
+	bool check;
+
+	// if the players clicks the left mouse button, is that grid cell occupied
+	if (input->wasMouseButtonPressed(0))
+	{
+		// which grid cell was clicked on
+		check = m_gridMap->CheckBounds(mouseX, mouseY);
+
+		// is there a unit in that cell
+		if (isUnitThere(index))
+		{
+
+		}
+		else {
+			// check if a unit has already been selected then move it to the clicked location
+			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction && validateMove(index))
+			{
+				m_selectedUnit->setPosition(index);
+				m_selectedUnit->setState(eState::EXHAUSTED);
+				m_selectedUnit = nullptr;
+			}
+			
+		}
+	}
+}
+
+bool BoardManager::validateMove(int index) 
+{
+	
+	if (m_path.size() > index)
+	{
+		std::list<const Node*>::iterator it = m_path.begin();
+		std::advance(it, index);
+		
+		auto node = *it;
+		
+		if (node->runningCost <= m_selectedUnit->getMoveCost())
+		{
+			return true;
+		}
+	}
+
+	return false;
+
+
+	return false;
 }

@@ -6,8 +6,10 @@ Unit::Unit()
 {
 	m_gridIndex = -1;
 	m_faction = Faction::NoFaction;
-	//m_hasMoved = false;
 	m_state = eState::READY;
+	m_health = 10;
+	m_attackStrength = 3;
+	m_moveCost = 3;
 }
 
 
@@ -35,12 +37,29 @@ Faction Unit::getFaction()
 	return m_faction;
 }
 
-//void Unit::setHasMoved (bool value)
-//{ 
-//	m_hasMoved = value; 
-//}
-//
-//bool Unit::getHasMoved()
-//{
-//	return m_hasMoved;
-//}
+// manages what happens when the unit shifts to the select state
+void Unit::updateSelected()
+{
+	// if the unit is not exhausted, show where it is eligable to move too
+
+}
+
+
+void Unit::updateReady()
+{
+
+
+}
+
+void Unit::updateExhausted()
+{
+
+
+}
+
+
+void Unit::updateDead()
+{
+
+}
+

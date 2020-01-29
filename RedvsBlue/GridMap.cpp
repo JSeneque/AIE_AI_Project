@@ -22,12 +22,12 @@ void GridMap::CreateMap()
 			if (x == 0 || x == m_columns - 1 || y == 0 || y == m_rows - 1)
 			{
 				// draw water tile
-				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Water;
+				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Terrain::Water;
 			}
 			else
 			{
 				// draw a ground tile
-				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Ground;
+				m_grid.at(getGridIndex(x * m_tileSize, y * m_tileSize)) = Terrain::Ground;
 			}
 		}
 	}
@@ -38,12 +38,6 @@ void GridMap::Print()
 	std::cout << "Map size: " << m_columns << " x " << m_rows << std::endl;
 	std::cout << "Grid size: " << m_grid.size() << std::endl;
 }
-
-// returns the grid index from coordinates
-//int  GridMap::getGridIndex(int const column, int const row) const
-//{
-//	return row * m_columns + column;
-//}
 
 int  GridMap::getGridIndex(int const mouseX, int const mouseY) const
 {
@@ -71,7 +65,7 @@ int  GridMap::getScreenCoordinateY(int const index) const
 	return (index / m_columns) * m_tileSize + m_tileSize / 2;
 }
 
-void GridMap::setTileAt(int x, int y, ObjectType tileType)
+void GridMap::setTileAt(int x, int y, Terrain tileType)
 {
 	x /= m_tileSize;
 	y /= m_tileSize;
@@ -91,7 +85,17 @@ int GridMap::getGridSize()
 	return m_grid.size();
 }
 
-ObjectType GridMap::getGridMapTile(int index)
+int GridMap::getGridSizeColumns() const
+{
+	return m_columns;
+}
+
+int GridMap::getGridSizeRows() const
+{
+	return m_rows;
+}
+
+Terrain GridMap::getGridMapTile(int index)
 {
 	return m_grid.at(index);
 }
@@ -99,8 +103,6 @@ ObjectType GridMap::getGridMapTile(int index)
 void GridMap::draw(aie::Renderer2D* renderer)
 {
 	drawTiles(renderer);
-	//drawGridLine(renderer);
-	//drawUnits(renderer);
 }
 
 void GridMap::drawTiles(aie::Renderer2D* renderer)
@@ -108,19 +110,19 @@ void GridMap::drawTiles(aie::Renderer2D* renderer)
 	// draw map
 	for (int i = 0; i < getGridSize(); ++i)
 	{
-		ObjectType objectType = getGridMapTile(i);
+		Terrain terrain = getGridMapTile(i);
 
 		// screen coordinates
 		int x = getScreenCoordinateX(i);
 		int y = getScreenCoordinateY(i);
 
-		switch (objectType)
+		switch (terrain)
 		{
-		case Ground:
+		case Terrain::Ground:
 			// 107,142,35)
 			renderer->setRenderColour(0.42, 0.56, .01, 1);
 			break;
-		case Water:
+		case Terrain::Water:
 			renderer->setRenderColour(0.20, 0.80, 1.0, 1);
 			break;
 		}
@@ -128,29 +130,6 @@ void GridMap::drawTiles(aie::Renderer2D* renderer)
 		renderer->drawBox(x, y, m_tileSize, m_tileSize);
 	}
 }
-
-//void GridMap::drawUnits(aie::Renderer2D* renderer)
-//{
-//	// draw map
-//	for (int i = 0; i < m_units.size(); ++i)
-//	{
-//		int index = m_units[i].getPosition();
-//		// screen coordinates
-//		int x = getScreenCoordinateX(index);
-//		int y = getScreenCoordinateY(index);
-//
-//		// set the unit colour
-//		Faction faction = m_units[i].getFaction();
-//
-//		if (faction == BlueFaction)
-//			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
-//		else if (faction == RedFaction)
-//			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
-//		
-//		// draw unit
-//		renderer->drawCircle(x , y , m_tileSize / 4);
-//	}
-//}
 
 void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 {
@@ -194,6 +173,19 @@ void GridMap::drawHover(aie::Renderer2D* renderer, int mouseX, int mouseY)
 	}
 }
 
+void GridMap::drawTileBorder(aie::Renderer2D* renderer, int index)
+{
+	int screenX = getScreenCoordinateX(index);
+	int screenY = getScreenCoordinateY(index);
+
+	renderer->setRenderColour(0, 1, 0, 1);
+
+	float lineThickness = 5.0f;
+
+	// top left horizontal line
+	renderer->drawLine(screenX - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, (screenX + (m_tileSize * 0.25)) - (m_tileSize / 2), screenY - (m_tileSize / 2) + m_tileSize, lineThickness);
+}
+
 void GridMap::drawGridLine(aie::Renderer2D* renderer)
 {
 
@@ -211,11 +203,6 @@ void GridMap::drawGridLine(aie::Renderer2D* renderer)
 	}
 }
 
-//void GridMap::addUnit(Unit unit)
-//{
-//	m_units.push_back(unit);
-//}
-
 int GridMap::getColumn(int mouseX) const
 {
 	return mouseX / m_tileSize;
@@ -229,5 +216,10 @@ int GridMap::getRow(int mouseY) const
 bool GridMap::CheckBounds(int const mouseX, int const mouseY) const
 {
 	return (m_columns > getColumn(mouseX) && (m_rows > getRow(mouseY)));
+}
+
+int GridMap::getTileSize() const
+{
+	return m_tileSize;
 }
 

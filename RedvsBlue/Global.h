@@ -1,11 +1,7 @@
 #pragma once
-enum ObjectType {
+enum class Terrain {
 	Ground = 0,
-	Water,
-	Soldier,
-	Tree,
-	Hover
-
+	Water
 };
  
 enum class Faction {
@@ -14,7 +10,7 @@ enum class Faction {
 	BlueFaction
 };
 
-enum class eState { READY, SELECTED, EXHAUSTED };
+enum class eState { READY, SELECTED, EXHAUSTED, DEAD };
 
 
 #define MAX_OBSERVERS 100

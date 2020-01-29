@@ -25,31 +25,31 @@ public:
 public:
 	int getGridIndex(int const mouseX, int const mouseY) const;
 
-	void setTileAt(int x, int y, ObjectType tileType);
+	void setTileAt(int x, int y, Terrain tileType);
 	int getGridSize();
-	ObjectType getGridMapTile(int index);
+	int getGridSizeColumns() const;
+	int getGridSizeRows() const;
+	Terrain getGridMapTile(int index);
 	void draw(aie::Renderer2D* renderer);
 	void drawHover(aie::Renderer2D* renderer, int x, int y);
 	void drawGridLine(aie::Renderer2D* renderer);
-	//void addUnit(Unit unit);
+	void drawTileBorder(aie::Renderer2D* renderer, int index);
+	int getTileSize() const;
 	int getColumn(int const mouseX) const;
 	int getRow(int const mouseY) const;
+	
 	bool CheckBounds(int const mouseX, int const mouseY) const;
 	int getScreenCoordinateX(int const index) const;
 	int getScreenCoordinateY(int const index) const;
 
 private:
 	void drawTiles(aie::Renderer2D* renderer);
-	//void drawUnits(aie::Renderer2D* renderer);
-	
-	
-	
 
 private:
 	int							m_columns;
 	int							m_rows;
 	int							m_tileSize;
-	std::vector<ObjectType>		m_grid;
+	std::vector<Terrain>		m_grid;
 	// this list holds all the units on the board
 	//std::vector<Unit>			m_units;
 
