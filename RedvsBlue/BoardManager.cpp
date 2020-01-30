@@ -103,8 +103,7 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 	// draw the map
 	m_gridMap->draw(renderer);
 	drawUnits(renderer);
-	// show where mouse is
-	m_gridMap->drawHover(renderer, mouseX, mouseY);
+	
 	// draw grid lines
 	m_gridMap->drawGridLine(renderer);
 
@@ -112,6 +111,9 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 	{
 		drawTileBorder(renderer);
 	}
+
+	// show where mouse is
+	m_gridMap->drawHover(renderer, mouseX, mouseY);
 	
 
 }
@@ -162,7 +164,7 @@ void BoardManager::drawTileBorder(aie::Renderer2D* renderer)
 
 	for (auto& node : m_path)
 	{
-		if (node->runningCost <= m_selectedUnit->getMoveCost())
+		if (node->runningCost <= m_selectedUnit->getMoveCost() && m_gridMap->getGridMapTile(node->id) != Terrain::Water)
 		{
 			int screenX = m_gridMap->getScreenCoordinateX(node->id);
 			int screenY = m_gridMap->getScreenCoordinateY(node->id);
