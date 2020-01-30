@@ -308,24 +308,21 @@ void BoardManager::HandleMouseInput(aie::Input* input)
 	}
 }
 
+// checks in the grid cell selected is within the movement cost of the unit
 bool BoardManager::validateMove(int index) 
 {
-	
+	// is there a better, more optmised way to perform this, instead of check each node
 	if (m_path.size() > index)
 	{
-		std::list<const Node*>::iterator it = m_path.begin();
-		std::advance(it, index);
-		
-		auto node = *it;
-		
-		if (node->runningCost <= m_selectedUnit->getMoveCost())
+		for (auto& node : m_path)
 		{
-			return true;
+			if (node->id == index && node->runningCost <= m_selectedUnit->getMoveCost())
+			{
+				std::cout << "Valid Location" << std::endl;
+				return true;
+			}
 		}
 	}
-
-	return false;
-
-
+	std::cout << "Invalid Location" << std::endl;
 	return false;
 }
