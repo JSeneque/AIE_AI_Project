@@ -204,33 +204,19 @@ void BoardManager::addUnit(Unit unit)
 // expensive but simplified version first
 bool BoardManager::isUnitThere(int index)
 {
-	// if there is a unit already selected, deselected it (only if it has not moved already)
-	if (m_selectedUnit != nullptr && m_selectedUnit->getState() != eState::EXHAUSTED  && m_selectedUnit->getFaction() == m_activeFaction)
-	{
-		m_selectedUnit->setState(eState::READY);
-	}
+
 	// check each unit's position
 	for (auto& unit : m_units)
 	{
-		// is there a unit in that position that hasn't moved yet
-		if (unit.getPosition() == index && unit.getState() != eState::EXHAUSTED  && unit.getFaction() == m_activeFaction)
+		// 1. check if there is a unit there
+		if (unit.getPosition() == index)
 		{
-			// save the unit
-			m_selectedUnit = &unit;
-			// change the state of the unit
-			unit.setState(eState::SELECTED);
-			// build the areas the unit can move too
-			m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
-
 			return true;
-
 		}
 	}
-
-	// null out the selected unit
-	//m_selectedUnit = nullptr;
 	return false;
 }
+	
 
 void BoardManager::CheckTurn() 
 {
@@ -260,7 +246,7 @@ void BoardManager::ChangeTurn()
 	for (auto& unit : m_units)
 	{
 		// if all units has moved, change the action faction
-		if (unit.getFaction() == m_activeFaction)
+		if (unit.getFaction() == m_activeFaction && unit.getState() != eState::DEAD)
 		{
 			//unit.setHasMoved(false);
 			unit.setState(eState::READY);
@@ -270,9 +256,78 @@ void BoardManager::ChangeTurn()
 
 void BoardManager::UpdateUnits()
 {
+	int pos = 0;
+
+	for (auto& unit : m_units)
+	{
+		if (unit.getState() == eState::DEAD)
+			m_units.erase(m_units.begin() + pos);
+		pos++;
+	}
+
 	for (auto& unit : m_units)
 	{
 		unit.update();
+	}
+	
+	
+
+}
+
+void BoardManager::ProcessClickedArea(int index)
+{
+	// check the clicked area was in bounds
+	if (m_gridMap->CheckBounds(mouseX, mouseY))
+	{
+		// did a unit get selected
+		for (auto& unit : m_units)
+		{
+			// 1. check if there is a unit there
+			if (unit.getPosition() == index && unit.getState() != eState::DEAD)
+			{
+				// is the unit of the same faction, if so change selected unit
+				if (unit.getFaction() == m_activeFaction)
+				{
+					// if not unit currently selected, then select unit
+					if (m_selectedUnit == nullptr && unit.getState() != eState::EXHAUSTED)
+					{
+						// save the unit
+						m_selectedUnit = &unit;
+						m_selectedUnit->setState(eState::SELECTED);
+						m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
+						return;
+					}
+					else if (m_selectedUnit != nullptr)
+					{
+						m_selectedUnit->setState(eState::READY);
+						// save the unit
+						m_selectedUnit = &unit;
+						// change the state of the unit
+						unit.setState(eState::SELECTED);
+						// build the areas the unit can move too
+						m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
+						return;
+					}
+				}
+				// otherwise is the enemy within range to attack
+				else if (m_selectedUnit != nullptr && validateMove(index))
+				{
+					m_selectedUnit->setState(eState::ATTACK);
+					unit.takeDamage(m_selectedUnit->getAttackStrength());
+					m_selectedUnit->setState(eState::EXHAUSTED);
+					m_selectedUnit = nullptr;
+					return;
+				}
+			}
+		}
+	
+		// If we have a unit already select, is this cell valid
+		if (m_selectedUnit != nullptr && validateMove(index))
+		{
+			m_selectedUnit->setPosition(index);
+			m_selectedUnit->setState(eState::EXHAUSTED);
+			m_selectedUnit = nullptr;
+		}
 	}
 }
 
@@ -284,30 +339,14 @@ void BoardManager::HandleMouseInput(aie::Input* input)
 
 	int index = m_gridMap->getGridIndex(mouseX, mouseY);
 
-	bool check;
+	//bool check;
 
 	// if the players clicks the left mouse button, is that grid cell occupied
 	if (input->wasMouseButtonPressed(0))
 	{
-		// which grid cell was clicked on
-		check = m_gridMap->CheckBounds(mouseX, mouseY);
-
-		// is there a unit in that cell
-		if (isUnitThere(index))
-		{
-
-		}
-		else {
-			// check if a unit has already been selected then move it to the clicked location
-			if (m_selectedUnit != nullptr && m_selectedUnit->getFaction() == m_activeFaction && validateMove(index))
-			{
-				m_selectedUnit->setPosition(index);
-				m_selectedUnit->setState(eState::EXHAUSTED);
-				m_selectedUnit = nullptr;
-			}
-			
-		}
+		ProcessClickedArea(index);
 	}
+	
 }
 
 // checks in the grid cell selected is within the movement cost of the unit

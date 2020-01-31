@@ -63,3 +63,8 @@ void Unit::updateDead()
 
 }
 
+void Unit::updateAttack()
+{
+
+}
+

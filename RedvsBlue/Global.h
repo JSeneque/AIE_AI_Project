@@ -10,7 +10,7 @@ enum class Faction {
 	BlueFaction
 };
 
-enum class eState { READY, SELECTED, EXHAUSTED, DEAD };
+enum class eState { READY, SELECTED, EXHAUSTED, DEAD, ATTACK };
 
 
 #define MAX_OBSERVERS 100

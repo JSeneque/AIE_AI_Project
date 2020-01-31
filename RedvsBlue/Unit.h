@@ -25,6 +25,7 @@ public:
 			case eState::SELECTED: std::cout << "Unit in Selected State" << std::endl; break;
 			case eState::EXHAUSTED: std::cout << "Unit in Exhausted State" << std::endl; break;
 			case eState::DEAD: std::cout << "Unit in Dead State" << std::endl; break;
+			case eState::ATTACK: std::cout << "Unit in Attack State" << std::endl; break;
 			default: assert(false && "m_state is invalid");
 			}
 	}
@@ -53,15 +54,19 @@ public:
 		case eState::SELECTED: updateSelected(); break;
 		case eState::EXHAUSTED: updateExhausted(); break;
 		case eState::DEAD: updateDead(); break;
+		case eState::ATTACK: updateAttack(); break;
 		default: assert(false && "m_state is invalid");
 		}
 	}
+
+	int getAttackStrength() { return m_attackStrength; }
 
 private:
 	void updateReady();
 	void updateSelected();
 	void updateExhausted();
 	void updateDead();
+	void updateAttack();
 
 private:
 	int m_gridIndex;

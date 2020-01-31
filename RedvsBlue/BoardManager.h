@@ -40,6 +40,7 @@ private:
 	void BuildNodeList();
 	void drawTileBorder(aie::Renderer2D* renderer);
 	bool validateMove(int index);
+	void ProcessClickedArea(int index);
 
 private:
 	aie::Renderer2D*			m_2dRenderer;
