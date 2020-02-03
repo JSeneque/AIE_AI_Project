@@ -126,7 +126,22 @@ void BoardManager::Update(aie::Input* input)
 	// reset all units of active faction to 'Ready'state
 	CheckTurn();
 	UpdateUnits();
-	HandleMouseInput(input);
+	
+	// determine if player or AI
+	if (m_activeFaction == Faction::BlueFaction)
+	{
+		//std::cout << "Player Turn" << std::endl;
+		HandleMouseInput(input);
+	}
+	else
+	{
+		//std::cout << "Process AI Turn" << std::endl;
+		ProcessAI();
+	}
+
+	
+
+	// process player move turn function...if blue...handle mouse input, red do ai function
 }
 	
 
@@ -312,10 +327,7 @@ void BoardManager::ProcessClickedArea(int index)
 				// otherwise is the enemy within range to attack
 				else if (m_selectedUnit != nullptr && validateMove(index))
 				{
-					m_selectedUnit->setState(eState::ATTACK);
-					unit.takeDamage(m_selectedUnit->getAttackStrength());
-					m_selectedUnit->setState(eState::EXHAUSTED);
-					m_selectedUnit = nullptr;
+					AttackUnit(unit, index);
 					return;
 				}
 			}
@@ -324,11 +336,24 @@ void BoardManager::ProcessClickedArea(int index)
 		// If we have a unit already select, is this cell valid
 		if (m_selectedUnit != nullptr && validateMove(index))
 		{
-			m_selectedUnit->setPosition(index);
-			m_selectedUnit->setState(eState::EXHAUSTED);
-			m_selectedUnit = nullptr;
+			MoveUnit(*m_selectedUnit, index);
 		}
 	}
+}
+
+void BoardManager::AttackUnit(Unit& unit, int index)
+{
+	m_selectedUnit->setState(eState::ATTACK);
+	unit.takeDamage(m_selectedUnit->getAttackStrength());
+	m_selectedUnit->setState(eState::EXHAUSTED);
+	m_selectedUnit = nullptr;
+}
+
+void BoardManager::MoveUnit(Unit& unit, int index)
+{
+	m_selectedUnit->setPosition(index);
+	m_selectedUnit->setState(eState::EXHAUSTED);
+	m_selectedUnit = nullptr;
 }
 
 void BoardManager::HandleMouseInput(aie::Input* input)
@@ -367,3 +392,67 @@ bool BoardManager::validateMove(int index)
 	std::cout << "Invalid Location" << std::endl;
 	return false;
 }
+
+void BoardManager::ProcessAI()
+{
+	// 1. For each Ready AI Unit
+		// 2. Find the closest enemy unit
+		// 3. if the enemy unit is within range, attack it
+		// 4. if the enemy unit is out of range, move to the tile closest to the enemy unit
+
+	for (auto&unit : m_units)
+	{
+		if (unit.getFaction() == m_activeFaction && unit.getState() == eState::READY)
+		{
+			m_selectedUnit = &unit;
+			std::cout << "Ready to process a READY AI unit!" << std::endl;
+			// loop through each of the enemy units and determine which has the lowest running cost
+			// determine start node
+			m_startPoint = &m_nodeList[unit.getPosition()];
+
+			// find which enemy is the closest
+			int runningCost = 9999;
+			Unit* enemyUnit;
+
+			for (auto&enemy : m_units)
+			{
+				if (enemy.getFaction() != m_activeFaction && enemy.getState() != eState::DEAD)
+				{
+					m_endPoint = &m_nodeList[enemy.getPosition()];
+					// we have the path to the enemy unit
+					m_path = DijkstraSearch(m_startPoint, m_endPoint);
+					// is this the closest unit? I would like to move to a more spacial checking if I have time
+					
+					if (runningCost > m_path.back()->runningCost)
+					{
+						enemyUnit = &enemy;
+						runningCost = m_path.back()->runningCost;
+					}
+				}
+			}
+			
+			// if the enemy closest enough to attack or do we move to it
+			if (runningCost <= unit.getMoveCost())
+			{
+				// attack it
+				AttackUnit(*enemyUnit, enemyUnit->getPosition()); // we don't rea
+			}
+			else
+			{
+				int index = 0;
+				for (auto&node : m_path)
+				{
+					
+					// the has to be a smarter way. Cycle through the path to the node we can move to limited by the move cost
+					if (node->runningCost <= unit.getMoveCost())
+					{
+						index = node->id;
+					}
+				}
+				MoveUnit(unit, index);
+			}
+		}
+	}
+
+}
+

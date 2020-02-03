@@ -41,6 +41,9 @@ private:
 	void drawTileBorder(aie::Renderer2D* renderer);
 	bool validateMove(int index);
 	void ProcessClickedArea(int index);
+	void AttackUnit(Unit& unit, int index);
+	void MoveUnit(Unit& unit, int index);
+	void ProcessAI();
 
 private:
 	aie::Renderer2D*			m_2dRenderer;
