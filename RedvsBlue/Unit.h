@@ -16,9 +16,9 @@ public:
 
 	void setFaction(Faction faction);
 	Faction getFaction();
-	
-	void setState(eState state_) {
-			m_state = state_; 
+
+	/*void setState(eState state_) {
+			m_state = state_;
 			switch (m_state)
 			{
 			case eState::READY: std::cout << "Unit in Ready State" << std::endl; break;
@@ -28,7 +28,20 @@ public:
 			case eState::ATTACK: std::cout << "Unit in Attack State" << std::endl; break;
 			default: assert(false && "m_state is invalid");
 			}
+	}*/
+
+	void setState(eState input)
+	{
+		m_state = input;
+
+		UnitState* state = state_->setState(*this, input);
+		if (state != NULL)
+		{
+			delete state_;
+			state_ = state;
+		}
 	}
+
 	eState getState() { return m_state; }
 
 	void takeDamage(int points)
@@ -46,17 +59,22 @@ public:
 		return m_moveCost;
 	}
 
-	void update()
+	//void update()
+	//{
+	//	switch (m_state)
+	//	{
+	//	case eState::READY: updateReady(); break;
+	//	case eState::SELECTED: updateSelected(); break;
+	//	case eState::EXHAUSTED: updateExhausted(); break;
+	//	case eState::DEAD: updateDead(); break;
+	//	case eState::ATTACK: updateAttack(); break;
+	//	default: assert(false && "m_state is invalid");
+	//	}
+	//}
+
+	virtual void update()
 	{
-		switch (m_state)
-		{
-		case eState::READY: updateReady(); break;
-		case eState::SELECTED: updateSelected(); break;
-		case eState::EXHAUSTED: updateExhausted(); break;
-		case eState::DEAD: updateDead(); break;
-		case eState::ATTACK: updateAttack(); break;
-		default: assert(false && "m_state is invalid");
-		}
+		state_->update(*this);
 	}
 
 	int getAttackStrength() { return m_attackStrength; }
@@ -75,6 +93,9 @@ private:
 	int m_health;
 	int m_attackStrength;
 	int m_moveCost;
+	
+public:
+	UnitState* state_;
 	
 };
 

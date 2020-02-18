@@ -5,6 +5,8 @@
 #include <math.h>
 #include "GridMap.h"
 #include <algorithm>
+#include "UnitState.h"
+#include "ReadyState.h"
 
 std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
@@ -33,19 +35,24 @@ void BoardManager::Initialise()
 
 	unit.setPosition(51);
 	unit.setFaction(Faction::BlueFaction);
+	unit.state_ = new ReadyState();
+
 	addUnit(unit);
 
 	unit.setPosition(61);
 	unit.setFaction(Faction::BlueFaction);
+	unit.state_ = new ReadyState();
 	addUnit(unit);
 	
 
 	unit.setPosition(68);
 	unit.setFaction(Faction::RedFaction);
+	unit.state_ = new ReadyState();
 	addUnit(unit);
 
 	unit.setPosition(48);
 	unit.setFaction(Faction::RedFaction);
+	unit.state_ = new ReadyState();
 	addUnit(unit);
 }
 

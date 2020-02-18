@@ -1,19 +1,17 @@
 #pragma once
+//#include "Unit.h"
+//#include "Global.h"
 class Unit;
 class ReadyState;
-
-enum State {
-	STATE_READY,
-	STATE_SELECTED,
-	STATE_EXHAUSED
-};
+class SelectedState;
 
 class UnitState
 {
 public:
 	static ReadyState ready;
+	static SelectedState selected;
 
 	virtual ~UnitState() {}
-	virtual void handleEvent(Unit& unit, State state) {}
+	virtual UnitState* setState(Unit& unit, eState state)  = 0;
 	virtual void update(Unit& unit) {};
 };
