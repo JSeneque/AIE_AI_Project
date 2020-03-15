@@ -39,14 +39,15 @@ void BoardManager::Initialise()
 	unit.setFaction(Faction::BlueFaction);
 	addUnit(unit);
 	
+	AIUnit aiUnit;
 
-	unit.setPosition(68);
-	unit.setFaction(Faction::RedFaction);
-	addUnit(unit);
+	aiUnit.setPosition(68);
+	aiUnit.setFaction(Faction::RedFaction);
+	m_aiUnits.push_back(aiUnit);
 
-	unit.setPosition(48);
-	unit.setFaction(Faction::RedFaction);
-	addUnit(unit);
+	aiUnit.setPosition(48);
+	aiUnit.setFaction(Faction::RedFaction);
+	m_aiUnits.push_back(aiUnit);
 }
 
 void BoardManager::SetupScene(int level)
@@ -103,6 +104,7 @@ void BoardManager::Draw(aie::Renderer2D* renderer)
 	// draw the map
 	m_gridMap->draw(renderer);
 	drawUnits(renderer);
+
 	
 	// draw grid lines
 	m_gridMap->drawGridLine(renderer);
@@ -147,7 +149,7 @@ void BoardManager::Update(aie::Input* input)
 
 void BoardManager::drawUnits(aie::Renderer2D* renderer)
 {
-	// draw map
+	// draw player units
 	for (int i = 0; i < m_units.size(); ++i)
 	{
 		int index = m_units[i].getPosition();
@@ -161,6 +163,26 @@ void BoardManager::drawUnits(aie::Renderer2D* renderer)
 		if (m_units[i].getFaction() == Faction::BlueFaction)
 			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
 		else 
+			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
+
+		// draw unit
+		renderer->drawCircle(x, y, m_gridMap->getGridSize() / 4);
+	}
+
+	// draw ai units
+	for (int i = 0; i < m_aiUnits.size(); ++i)
+	{
+		int index = m_aiUnits[i].getPosition();
+		// screen coordinates
+		int x = m_gridMap->getScreenCoordinateX(index);
+		int y = m_gridMap->getScreenCoordinateY(index);
+
+		// set the unit colour
+		//Faction faction = m_units[i].getFaction();
+
+		if (m_aiUnits[i].getFaction() == Faction::BlueFaction)
+			renderer->setRenderColour(0.42, 0.56, 1.0, 1);
+		else
 			renderer->setRenderColour(1.0, 0.56, 0.42, 1);
 
 		// draw unit
@@ -284,6 +306,20 @@ void BoardManager::UpdateUnits()
 	{
 		unit.update();
 	}
+
+	pos = 0;
+
+	for (auto& aiUnit : m_aiUnits)
+	{
+		if (aiUnit.getState() == eState::DEAD)
+			m_aiUnits.erase(m_aiUnits.begin() + pos);
+		pos++;
+	}
+
+	for (auto& aiUnit : m_aiUnits)
+	{
+		aiUnit.update();
+	}
 	
 	
 
@@ -291,57 +327,80 @@ void BoardManager::UpdateUnits()
 
 void BoardManager::ProcessClickedArea(int index)
 {
+	/*
+		1. Did the player select an empty grid
+		2. Did the player select a friendly unit
+		3. If a unit is already selected, did the player choose to move it
+		4. if a unit is already selected, did the player choose to attack an AI unit
+
+	*/
 	// check the clicked area was in bounds
 	if (m_gridMap->CheckBounds(mouseX, mouseY))
 	{
-		// did a unit get selected
+		// did the player select a different player unit
 		for (auto& unit : m_units)
 		{
 			// 1. check if there is a unit there
 			if (unit.getPosition() == index && unit.getState() != eState::DEAD)
 			{
-				// is the unit of the same faction, if so change selected unit
-				if (unit.getFaction() == m_activeFaction)
+				//std::cout << "Selected a unit!" << std::endl;
+				// if not unit currently selected, then select unit
+				if (m_selectedUnit == nullptr && unit.getState() != eState::EXHAUSTED)
 				{
-					// if not unit currently selected, then select unit
-					if (m_selectedUnit == nullptr && unit.getState() != eState::EXHAUSTED)
-					{
-						// save the unit
-						m_selectedUnit = &unit;
-						m_selectedUnit->setState(eState::SELECTED);
-						m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
-						return;
-					}
-					else if (m_selectedUnit != nullptr)
-					{
-						m_selectedUnit->setState(eState::READY);
-						// save the unit
-						m_selectedUnit = &unit;
-						// change the state of the unit
-						unit.setState(eState::SELECTED);
-						// build the areas the unit can move too
-						m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
-						return;
-					}
+					// save the unit
+					m_selectedUnit = &unit;
+					m_selectedUnit->setState(eState::SELECTED);
+					m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
+					return;
 				}
-				// otherwise is the enemy within range to attack
-				else if (m_selectedUnit != nullptr && validateMove(index))
+				else if (m_selectedUnit != nullptr)
 				{
-					AttackUnit(unit, index);
+					m_selectedUnit->setState(eState::READY);
+					// save the unit
+					m_selectedUnit = &unit;
+					// change the state of the unit
+					unit.setState(eState::SELECTED);
+					// build the areas the unit can move too
+					m_path = ShowMovementArea(&m_nodeList[unit.getPosition()]);
 					return;
 				}
 			}
 		}
-	
+
+		// check if the player is attacking
+		if (m_selectedUnit != nullptr)
+		{
+			for (auto& aiUnit : m_aiUnits)
+			{
+				// 1. check if there is a unit there
+				if (aiUnit.getPosition() == index)//&& aiUnit.getState() != eState::DEAD)
+				{
+					std::cout << "Attacking!" << std::endl;
+					AttackAIUnit(aiUnit, index);
+					return;
+				}
+			}
+		}
+
 		// If we have a unit already select, is this cell valid
 		if (m_selectedUnit != nullptr && validateMove(index))
 		{
 			MoveUnit(*m_selectedUnit, index);
 		}
+
 	}
 }
 
+
 void BoardManager::AttackUnit(Unit& unit, int index)
+{
+	m_selectedUnit->setState(eState::ATTACK);
+	unit.takeDamage(m_selectedUnit->getAttackStrength());
+	m_selectedUnit->setState(eState::EXHAUSTED);
+	m_selectedUnit = nullptr;
+}
+
+void BoardManager::AttackAIUnit(AIUnit& unit, int index)
 {
 	m_selectedUnit->setState(eState::ATTACK);
 	unit.takeDamage(m_selectedUnit->getAttackStrength());
@@ -354,6 +413,13 @@ void BoardManager::MoveUnit(Unit& unit, int index)
 	m_selectedUnit->setPosition(index);
 	m_selectedUnit->setState(eState::EXHAUSTED);
 	m_selectedUnit = nullptr;
+}
+
+void BoardManager::MoveAIUnit(AIUnit& unit, int index)
+{
+	m_selectedAIUnit->setPosition(index);
+	m_selectedAIUnit->setState(eState::EXHAUSTED);
+	m_selectedAIUnit = nullptr;
 }
 
 void BoardManager::HandleMouseInput(aie::Input* input)
@@ -400,15 +466,15 @@ void BoardManager::ProcessAI()
 		// 3. if the enemy unit is within range, attack it
 		// 4. if the enemy unit is out of range, move to the tile closest to the enemy unit
 
-	for (auto&unit : m_units)
+	for (auto&aiUnit : m_aiUnits)
 	{
-		if (unit.getFaction() == m_activeFaction && unit.getState() == eState::READY)
+		if (aiUnit.getFaction() == m_activeFaction && aiUnit.getState() == eState::READY)
 		{
-			m_selectedUnit = &unit;
+			m_selectedAIUnit = &aiUnit;
 			std::cout << "Ready to process a READY AI unit!" << std::endl;
 			// loop through each of the enemy units and determine which has the lowest running cost
 			// determine start node
-			m_startPoint = &m_nodeList[unit.getPosition()];
+			m_startPoint = &m_nodeList[aiUnit.getPosition()];
 
 			// find which enemy is the closest
 			int runningCost = 9999;
@@ -432,7 +498,7 @@ void BoardManager::ProcessAI()
 			}
 			
 			// if the enemy closest enough to attack or do we move to it
-			if (runningCost <= unit.getMoveCost())
+			if (runningCost <= aiUnit.getMoveCost())
 			{
 				// attack it
 				AttackUnit(*enemyUnit, enemyUnit->getPosition()); // we don't rea
@@ -444,12 +510,12 @@ void BoardManager::ProcessAI()
 				{
 					
 					// the has to be a smarter way. Cycle through the path to the node we can move to limited by the move cost
-					if (node->runningCost <= unit.getMoveCost())
+					if (node->runningCost <= aiUnit.getMoveCost())
 					{
 						index = node->id;
 					}
 				}
-				MoveUnit(unit, index);
+				MoveAIUnit(aiUnit, index);
 			}
 		}
 	}

@@ -6,6 +6,7 @@
 #include "Tile.h"
 #include "Graph.h"
 #include "GridMap.h"
+#include "AIUnit.h"
 
 class BoardManager
 {
@@ -42,7 +43,9 @@ private:
 	bool validateMove(int index);
 	void ProcessClickedArea(int index);
 	void AttackUnit(Unit& unit, int index);
+	void AttackAIUnit(AIUnit& unit, int index);
 	void MoveUnit(Unit& unit, int index);
+	void MoveAIUnit(AIUnit& unit, int index);
 	void ProcessAI();
 
 private:
@@ -59,8 +62,10 @@ private:
 
 	GridMap*					m_gridMap;
 	std::vector<Unit>			m_units;
+	std::vector<AIUnit>			m_aiUnits;
 	int							m_selectedUnitIndex;
 	Unit*						m_selectedUnit;
+	AIUnit*						m_selectedAIUnit;
 	Faction						m_activeFaction;
 };
 

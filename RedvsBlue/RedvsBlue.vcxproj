@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIUnit.cpp" />
     <ClCompile Include="BoardManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GridMap.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIUnit.h" />
     <ClInclude Include="BoardManager.h" />
     <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="GameObject.h" />
