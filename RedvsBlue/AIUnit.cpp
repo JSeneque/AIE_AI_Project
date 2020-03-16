@@ -1,11 +1,12 @@
 #include "AIUnit.h"
-
+#include "IdleState.h"
 
 AIUnit::AIUnit()
 {
 	m_gridIndex = -1;
 	m_faction = Faction::NoFaction;
-	m_state = eState::READY;
+	//m_state = eState::READY;
+	state_ = new IdleState(); //SearchForEnemyState();
 	m_health = 10;
 	m_attackStrength = 3;
 	m_moveCost = 3;
@@ -36,33 +37,6 @@ Faction AIUnit::getFaction()
 	return m_faction;
 }
 
-// manages what happens when the unit shifts to the select state
-void AIUnit::updateSelected()
-{
-	// if the unit is not exhausted, show where it is eligable to move too
-
-}
 
 
-void AIUnit::updateReady()
-{
 
-
-}
-
-void AIUnit::updateExhausted()
-{
-
-
-}
-
-
-void AIUnit::updateDead()
-{
-
-}
-
-void AIUnit::updateAttack()
-{
-
-}

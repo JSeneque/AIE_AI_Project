@@ -1,7 +1,7 @@
 #pragma once
 #include "Global.h"
 #include "Renderer2D.h"
-#include "UnitState.h"
+//#include "UnitState.h"
 #include <iostream>
 #include <assert.h>
 
@@ -17,7 +17,7 @@ public:
 	void setFaction(Faction faction);
 	Faction getFaction();
 
-	/*void setState(eState state_) {
+	void setState(eState state_) {
 			m_state = state_;
 			switch (m_state)
 			{
@@ -28,19 +28,19 @@ public:
 			case eState::ATTACK: std::cout << "Unit in Attack State" << std::endl; break;
 			default: assert(false && "m_state is invalid");
 			}
-	}*/
-
-	void setState(eState input)
-	{
-		m_state = input;
-
-		UnitState* state = state_->setState(*this, input);
-		if (state != NULL)
-		{
-			delete state_;
-			state_ = state;
-		}
 	}
+
+	//void setState(eState input)
+	//{
+	//	m_state = input;
+
+	//	UnitState* state = state_->setState(*this, input);
+	//	if (state != NULL)
+	//	{
+	//		delete state_;
+	//		state_ = state;
+	//	}
+	//}
 
 	eState getState() { return m_state; }
 
@@ -59,23 +59,23 @@ public:
 		return m_moveCost;
 	}
 
-	//void update()
-	//{
-	//	switch (m_state)
-	//	{
-	//	case eState::READY: updateReady(); break;
-	//	case eState::SELECTED: updateSelected(); break;
-	//	case eState::EXHAUSTED: updateExhausted(); break;
-	//	case eState::DEAD: updateDead(); break;
-	//	case eState::ATTACK: updateAttack(); break;
-	//	default: assert(false && "m_state is invalid");
-	//	}
-	//}
-
-	virtual void update()
+	void update()
 	{
-		state_->update(*this);
+		switch (m_state)
+		{
+		case eState::READY: updateReady(); break;
+		case eState::SELECTED: updateSelected(); break;
+		case eState::EXHAUSTED: updateExhausted(); break;
+		case eState::DEAD: updateDead(); break;
+		case eState::ATTACK: updateAttack(); break;
+		default: assert(false && "m_state is invalid");
+		}
 	}
+
+	//virtual void update()
+	//{
+	//	state_->update(*this);
+	//}
 
 	int getAttackStrength() { return m_attackStrength; }
 
@@ -95,7 +95,7 @@ private:
 	int m_moveCost;
 	
 public:
-	UnitState* state_;
+	//UnitState* state_;
 	
 };
 

@@ -83,13 +83,16 @@
     <ClInclude Include="GridMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UnitState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReadyState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AIUnit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SearchForEnemyState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AIUnitState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IdleState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

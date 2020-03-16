@@ -1,7 +1,8 @@
 #pragma once
 #include "Global.h"
 #include "Renderer2D.h"
-#include "UnitState.h"
+#include "AIUnitState.h"
+#include "BoardManager.h"
 #include <iostream>
 #include <assert.h>
 
@@ -17,18 +18,26 @@ public:
 	void setFaction(Faction faction);
 	Faction getFaction();
 
-	void setState(eState state_) {
-		m_state = state_;
-		switch (m_state)
+
+	virtual void setState(aiState state)
+	{
+
+
+		state_->setState(*this, state);
+
+		/*if (tempState != NULL)
 		{
-		case eState::READY: std::cout << "Unit in Ready State" << std::endl; break;
-		case eState::SELECTED: std::cout << "Unit in Selected State" << std::endl; break;
-		case eState::EXHAUSTED: std::cout << "Unit in Exhausted State" << std::endl; break;
-		case eState::DEAD: std::cout << "Unit in Dead State" << std::endl; break;
-		case eState::ATTACK: std::cout << "Unit in Attack State" << std::endl; break;
-		default: assert(false && "m_state is invalid");
-		}
+			delete state_;
+			state_ = tempState;
+		}*/
+
 	}
+
+	virtual void update(BoardManager& bm)
+	{
+		state_->update(bm, *this);
+	}
+
 	eState getState() { return m_state; }
 
 	void takeDamage(int points)
@@ -37,7 +46,7 @@ public:
 
 		if (m_health <= 0)
 		{
-			setState(eState::DEAD);
+			//setState(aiState::DEAD);
 		}
 	}
 
@@ -46,27 +55,9 @@ public:
 		return m_moveCost;
 	}
 
-	void update()
-	{
-		switch (m_state)
-		{
-		case eState::READY: updateReady(); break;
-		case eState::SELECTED: updateSelected(); break;
-		case eState::EXHAUSTED: updateExhausted(); break;
-		case eState::DEAD: updateDead(); break;
-		case eState::ATTACK: updateAttack(); break;
-		default: assert(false && "m_state is invalid");
-		}
-	}
 
 	int getAttackStrength() { return m_attackStrength; }
 
-private:
-	void updateReady();
-	void updateSelected();
-	void updateExhausted();
-	void updateDead();
-	void updateAttack();
 
 private:
 	int m_gridIndex;
@@ -75,6 +66,10 @@ private:
 	int m_health;
 	int m_attackStrength;
 	int m_moveCost;
+
+public:
+
+	AIUnitState* state_;
 
 };
 

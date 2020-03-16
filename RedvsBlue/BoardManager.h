@@ -18,6 +18,7 @@ public:
 	void Draw(aie::Renderer2D* renderer);
 	void Update(aie::Input* input);
 	void addUnit(Unit unit);
+	Faction getActiveFaction();
 	
 
 	// acts as a range
@@ -29,6 +30,8 @@ public:
 		int minimum;
 		int maximum;
 	};
+
+
 
 private:
 	void Initialise();

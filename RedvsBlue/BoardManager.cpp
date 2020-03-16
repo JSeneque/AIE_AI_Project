@@ -6,6 +6,7 @@
 #include "GridMap.h"
 #include <algorithm>
 
+
 std::list<const Node*> DijkstraSearch(Node* startNode, Node* endNode);
 
 BoardManager::BoardManager()
@@ -295,6 +296,7 @@ void BoardManager::UpdateUnits()
 {
 	int pos = 0;
 
+	// remove any dead units
 	for (auto& unit : m_units)
 	{
 		if (unit.getState() == eState::DEAD)
@@ -302,6 +304,7 @@ void BoardManager::UpdateUnits()
 		pos++;
 	}
 
+	// update player units
 	for (auto& unit : m_units)
 	{
 		unit.update();
@@ -309,6 +312,7 @@ void BoardManager::UpdateUnits()
 
 	pos = 0;
 
+	// remove any dead AI Units
 	for (auto& aiUnit : m_aiUnits)
 	{
 		if (aiUnit.getState() == eState::DEAD)
@@ -316,13 +320,14 @@ void BoardManager::UpdateUnits()
 		pos++;
 	}
 
-	for (auto& aiUnit : m_aiUnits)
+	// only update AI if it is it's turn
+	if (m_activeFaction == Faction::RedFaction) 
 	{
-		aiUnit.update();
+		for (auto& aiUnit : m_aiUnits)
+		{
+			aiUnit.update(*this);
+		}
 	}
-	
-	
-
 }
 
 void BoardManager::ProcessClickedArea(int index)
@@ -418,7 +423,8 @@ void BoardManager::MoveUnit(Unit& unit, int index)
 void BoardManager::MoveAIUnit(AIUnit& unit, int index)
 {
 	m_selectedAIUnit->setPosition(index);
-	m_selectedAIUnit->setState(eState::EXHAUSTED);
+	// move this to a ai state 
+	//m_selectedAIUnit->setState(eState::EXHAUSTED);
 	m_selectedAIUnit = nullptr;
 }
 
@@ -462,12 +468,15 @@ bool BoardManager::validateMove(int index)
 void BoardManager::ProcessAI()
 {
 	// 1. For each Ready AI Unit
-		// 2. Find the closest enemy unit
+		// 2. Find the closest enemy unit (That should be an AI State behaviour, not in the board manager
 		// 3. if the enemy unit is within range, attack it
 		// 4. if the enemy unit is out of range, move to the tile closest to the enemy unit
 
 	for (auto&aiUnit : m_aiUnits)
 	{
+		// the assumption is that ai units in the list as not dead
+		//aiUnit.setState(aiState::SEARCH);
+		/*
 		if (aiUnit.getFaction() == m_activeFaction && aiUnit.getState() == eState::READY)
 		{
 			m_selectedAIUnit = &aiUnit;
@@ -518,7 +527,12 @@ void BoardManager::ProcessAI()
 				MoveAIUnit(aiUnit, index);
 			}
 		}
+		*/
 	}
 
 }
 
+Faction BoardManager::getActiveFaction()
+{
+	return m_activeFaction;
+}

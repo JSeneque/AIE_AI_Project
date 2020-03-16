@@ -175,20 +175,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIUnit.h" />
+    <ClInclude Include="AIUnitState.h" />
     <ClInclude Include="BoardManager.h" />
     <ClInclude Include="Dijkstra.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Global.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GridMap.h" />
+    <ClInclude Include="IdleState.h" />
     <ClInclude Include="Observer.h" />
-    <ClInclude Include="ReadyState.h" />
     <ClInclude Include="RedvsBlueApp.h" />
-    <ClInclude Include="SelectedState.h" />
+    <ClInclude Include="SearchForEnemyState.h" />
     <ClInclude Include="Subject.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="Unit.h" />
-    <ClInclude Include="UnitState.h" />
     <ClInclude Include="Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

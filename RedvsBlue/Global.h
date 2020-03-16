@@ -13,7 +13,7 @@ enum class Faction {
 };
 
 enum class eState { READY, SELECTED, EXHAUSTED, DEAD, ATTACK };
-
+enum class aiState { IDLE, SEARCH};
 
 #define MAX_OBSERVERS 100
 

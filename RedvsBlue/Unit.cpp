@@ -7,6 +7,7 @@ Unit::Unit()
 	m_gridIndex = -1;
 	m_faction = Faction::NoFaction;
 	m_state = eState::READY;
+
 	m_health = 10;
 	m_attackStrength = 3;
 	m_moveCost = 3;
